@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDSON | B.P.O. v6.5 STABLE</title>
+    <title>RICHARDSON | B.P.O. v6.6 CYBER_SYSTEM</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -21,7 +21,7 @@
             --card-hover: #111111;
         }
 
-        * { box-sizing: border-box; transition: background 0.3s, color 0.3s, transform 0.2s; border-radius: 0 !important; }
+        * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 0 !important; }
         
         body {
             background-color: var(--bg);
@@ -30,95 +30,79 @@
             overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* --- ANIMATIONS --- */
+        /* --- ANIMATIONS GLITCH & SCAN --- */
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
         @keyframes scanLine { 0% { top: -10%; opacity: 0; } 40% { opacity: 1; } 100% { top: 110%; opacity: 0; } }
-        @keyframes pulseNeon { 0%, 100% { filter: brightness(1); opacity: 1; } 50% { filter: brightness(1.5); opacity: 0.7; } }
+        @keyframes pulseNeon { 50% { filter: brightness(1.5); box-shadow: 0 0 20px var(--online-green); } }
 
-        /* --- HEADER --- */
+        /* --- UI COMPONENTS --- */
         header {
             height: 80px; background: var(--surface); border-bottom: 2px solid var(--primary);
             display: flex; align-items: center; padding: 0 40px; z-index: 1000; flex-shrink: 0;
         }
-        .logo { font-weight: 900; font-size: 1.4rem; letter-spacing: 4px; text-decoration: none; color: var(--primary); cursor: pointer; }
+        .logo { font-weight: 900; font-size: 1.4rem; letter-spacing: 4px; color: var(--primary); text-decoration: none; cursor: pointer; }
         .logo span { color: var(--accent); }
 
         .header-actions { display: flex; gap: 10px; margin-left: auto; }
         .action-btn {
-            background: var(--primary); color: var(--surface); border: none; padding: 10px 18px;
-            font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 700; cursor: pointer; text-transform: uppercase;
+            background: var(--primary); color: var(--surface); border: none; padding: 12px 20px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 700; cursor: pointer; text-transform: uppercase;
         }
-        .action-btn:hover { background: var(--accent); }
 
-        /* --- LAYOUT --- */
         .main-wrapper { display: grid; grid-template-columns: 300px 1fr var(--ai-panel-w); flex-grow: 1; overflow: hidden; }
 
-        /* --- ASIDE GAUCHE --- */
-        aside {
-            border-right: 1px solid var(--border); background: var(--surface); padding: 40px;
-            display: flex; flex-direction: column; z-index: 10;
-        }
+        aside { border-right: 1px solid var(--border); background: var(--surface); padding: 40px; display: flex; flex-direction: column; }
         .nav-link { 
-            text-decoration: none; color: var(--primary); font-size: 0.75rem; font-weight: 700; 
+            color: var(--primary); font-size: 0.75rem; font-weight: 700; text-decoration: none;
             display: block; margin-bottom: 25px; opacity: 0.5; cursor: pointer; text-transform: uppercase;
         }
         .nav-link.active { opacity: 1; color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; }
 
         #statusBar { margin-top: auto; padding-top: 30px; border-top: 2px solid var(--primary); font-family: 'JetBrains Mono', monospace; }
-        .status-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px; text-transform: uppercase; font-size: 0.6rem; }
+        .status-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px; font-size: 0.6rem; text-transform: uppercase; }
         .status-value { font-weight: 700; display: flex; align-items: center; gap: 10px; font-size: 0.7rem; }
-        
-        .dot { 
-            width: 10px; height: 10px; background: var(--online-green); 
-            box-shadow: 0 0 var(--glow-power) var(--online-green); 
-            animation: pulseNeon 2s infinite; border-radius: 50% !important;
-        }
+        .dot { width: 10px; height: 10px; background: var(--online-green); border-radius: 50% !important; animation: pulseNeon 2s infinite; }
 
-        /* --- CENTRE --- */
+        /* --- CONTENT & CARDS --- */
         .content { padding: 40px; overflow-y: auto; }
-        .view-header { margin-bottom: 30px; opacity: 0.4; font-family: 'JetBrains Mono'; font-size: 0.7rem; letter-spacing: 3px; }
         .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--primary); }
 
-        .b-card {
-            background: var(--surface); padding: 50px 40px; cursor: pointer; 
-            display: flex; flex-direction: column; position: relative; overflow: hidden;
-        }
-        .b-card::after {
-            content: ""; position: absolute; left: 0; width: 100%; height: 3px;
-            background: #ffffff; opacity: 0; z-index: 10; box-shadow: 0 0 15px #ffffff;
-        }
-        .b-card:hover::after { animation: scanLine 0.8s ease-in-out; }
-        .b-card:hover { 
-            background: var(--card-hover); color: var(--card-hover-text); 
-            transform: scale(1.02); z-index: 10; border: 1px solid #ffffff;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
+        .b-card { background: var(--surface); padding: 50px 40px; cursor: pointer; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .b-card:hover { background: var(--card-hover); color: var(--card-hover-text); z-index: 10; border: 1px solid #fff; }
+        .b-card::after { content: ""; position: absolute; left: 0; width: 100%; height: 3px; background: #fff; opacity: 0; box-shadow: 0 0 15px #fff; }
+        .b-card:hover::after { animation: scanLine 0.8s ease-in-out; opacity: 1; }
 
         .domain-color { height: 6px; width: 100%; margin-bottom: 25px; }
         .c-sanitaire { background-color: #1e88e5; }
         .c-chauffage { background-color: #ff9800; }
         .c-plomberie { background-color: #4caf50; }
 
-        .catalog-status { 
-            display: inline-block; padding: 4px 10px; font-size: 0.65rem; font-weight: 800; 
-            margin-bottom: 20px; text-transform: uppercase;
-        }
+        .catalog-status { display: inline-block; padding: 4px 10px; font-size: 0.65rem; font-weight: 800; margin-bottom: 20px; text-transform: uppercase; }
         .valid { background: var(--online-green); color: #000; box-shadow: 0 0 var(--glow-power) var(--online-green); }
-        .obsolete { background: var(--offline-red); color: #fff; box-shadow: 0 0 var(--glow-power) var(--offline-red); }
+        .obsolete { background: var(--offline-red); color: #fff; animation: glitch 0.3s infinite; box-shadow: 0 0 var(--glow-power) var(--offline-red); }
+
+        /* --- SYSTEM BUTTON --- */
+        .btn-open {
+            margin-top: 25px; background: transparent; border: 2px solid var(--primary); color: inherit;
+            padding: 14px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700;
+            text-transform: uppercase; cursor: pointer; width: 100%; letter-spacing: 1px;
+        }
+        .b-card:hover .btn-open { border-color: #ffffff; color: #ffffff; background: rgba(255,255,255,0.1); }
 
         /* --- AI PANEL --- */
-        .ai-panel { border-left: 2px solid var(--primary); background: var(--surface); display: flex; flex-direction: column; height: 100%; }
+        .ai-panel { border-left: 2px solid var(--primary); background: var(--surface); display: flex; flex-direction: column; }
         .ai-header { padding: 20px; background: var(--primary); color: var(--surface); font-family: 'JetBrains Mono'; font-size: 0.7rem; font-weight: 800; }
-        .ai-chat-results { 
-            flex-grow: 1; padding: 20px; overflow-y: auto; font-family: 'JetBrains Mono'; 
-            font-size: 0.75rem; background: var(--bg); color: var(--text);
-        }
-        .ai-msg { margin-bottom: 15px; padding: 12px; border-left: 3px solid var(--accent); background: var(--surface); }
-        .ai-msg.user { border-left: 0; border-right: 3px solid var(--primary); text-align: right; opacity: 0.7; }
-        .ai-input-area { padding: 20px; border-top: 1px solid var(--border); background: var(--surface); }
-        .ai-input { 
-            width: 100%; background: var(--bg); border: 2px solid var(--primary); 
-            padding: 12px; font-family: 'JetBrains Mono'; font-size: 0.75rem; color: var(--text); outline: none;
-        }
+        .ai-chat-results { flex-grow: 1; padding: 25px; overflow-y: auto; font-family: 'JetBrains Mono'; font-size: 0.75rem; background: var(--bg); }
+        .ai-msg { margin-bottom: 20px; padding: 15px; border-left: 3px solid var(--accent); background: var(--surface); }
+        .ai-input-area { padding: 25px; border-top: 1px solid var(--border); background: var(--surface); }
+        .ai-input { width: 100%; background: var(--bg); border: 2px solid var(--primary); padding: 15px; font-family: 'JetBrains Mono'; color: var(--text); outline: none; }
     </style>
 </head>
 <body data-theme="light">
@@ -126,10 +110,10 @@
 <header>
     <div class="logo" onclick="renderDomaines()">RICHARDSON_<span>B.P.O.</span></div>
     <div style="flex-grow: 1; margin: 0 40px;">
-        <input type="text" id="globalSearch" placeholder="RECHERCHE_INDEX..." style="width:100%; background:transparent; border:1px solid var(--border); padding:10px; font-family:'JetBrains Mono'; color:inherit; outline:none;">
+        <input type="text" id="globalSearch" placeholder="SYSTEM_SCANNER_INDEX..." style="width:100%; background:transparent; border:1px solid var(--border); padding:10px; font-family:'JetBrains Mono'; color:inherit; outline:none;">
     </div>
     <div class="header-actions">
-        <button class="action-btn" onclick="aiBot('Générer rapport')">Rapport</button>
+        <button class="action-btn" onclick="aiBot('Générer rapport technique')">Rapport</button>
         <button class="action-btn" id="themeBtn" onclick="toggleTheme()">Dark_Mode</button>
     </div>
 </header>
@@ -138,8 +122,8 @@
     <aside>
         <div style="font-size: 0.6rem; font-weight: 800; margin-bottom: 30px; opacity: 0.4; letter-spacing: 2px;">SYSTEM_NAV</div>
         <nav>
-            <div onclick="renderDomaines()" class="nav-link active">// INDEX_GLOBAL</div>
-            <div class="nav-link">// FAVORIS</div>
+            <div id="nav-global" onclick="renderDomaines()" class="nav-link active">// INDEX_GLOBAL</div>
+            <div id="nav-fav" onclick="renderFavoris()" class="nav-link">// FAVORIS_SYSTEME</div>
         </nav>
 
         <div id="statusBar">
@@ -155,12 +139,12 @@
     </main>
 
     <section class="ai-panel">
-        <div class="ai-header">CORE_AI_TERMINAL</div>
+        <div class="ai-header">CORE_AI_TERMINAL v2.6</div>
         <div class="ai-chat-results" id="aiChat">
-            <div class="ai-msg bot">> ANALYSEUR_PRÊT. Entrez une marque ou une division.</div>
+            <div class="ai-msg bot">> ANALYSEUR_PDF_ACTIF. Posez une question sur les marques Sanitaire, Chauffage ou Plomberie.</div>
         </div>
         <div class="ai-input-area">
-            <input type="text" id="aiInput" class="ai-input" placeholder="DEMANDER À L'IA..." onkeypress="if(event.key === 'Enter') handleAiChat()">
+            <input type="text" id="aiInput" class="ai-input" placeholder="COMMAND_IA..." onkeypress="if(event.key === 'Enter') handleAiChat()">
         </div>
     </section>
 </div>
@@ -177,8 +161,8 @@
     const aiChat = document.getElementById("aiChat");
     const viewTitle = document.getElementById("viewTitle");
 
-    // NAVIGATION & RENDU
     function renderDomaines() {
+        setActiveNav('nav-global');
         viewTitle.innerText = "SYSTEM / ROOT / INDEX";
         app.innerHTML = "";
         Object.keys(db).forEach(dom => {
@@ -211,43 +195,51 @@
             const sClass = isObsolete ? "obsolete" : "valid";
             const card = document.createElement("div");
             card.className = "b-card";
-            card.innerHTML = `<div class="catalog-status ${sClass}">${statusText}</div><h3>EDITION ${year}</h3><button style="margin-top:20px; background:transparent; border:1px solid inherit; padding:12px; color:inherit; font-weight:700; cursor:pointer;">OUVRIR_PDF</button>`;
+            card.innerHTML = `
+                <div class="catalog-status ${sClass}">${statusText}</div>
+                <h3>EDITION ${year}</h3>
+                <button class="btn-open">OUVRIR_PDF</button>
+            `;
             app.appendChild(card);
         });
     }
 
-    // IA LOGIC
+    function renderFavoris() {
+        setActiveNav('nav-fav');
+        viewTitle.innerText = "SYSTEM / ROOT / FAVORIS";
+        app.innerHTML = `
+            <div class="b-card"><div class="catalog-status valid">FAVORI</div><h3>GROHE 2026</h3><button class="btn-open">OUVRIR_PDF</button></div>
+            <div class="b-card"><div class="catalog-status valid">FAVORI</div><h3>NICOLL 2025</h3><button class="btn-open">OUVRIR_PDF</button></div>
+        `;
+    }
+
+    function setActiveNav(id) {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
     function handleAiChat() {
         const input = document.getElementById("aiInput");
-        const val = input.value.trim();
-        if(!val) return;
-        aiChat.innerHTML += `<div class="ai-msg user">${val}</div>`;
+        if(!input.value.trim()) return;
+        aiChat.innerHTML += `<div class="ai-msg user">${input.value}</div>`;
         input.value = "";
         aiChat.scrollTop = aiChat.scrollHeight;
         setTimeout(() => {
-            let res = "Analyse terminée. Résultat disponible dans l'index.";
-            if(val.toLowerCase().includes("plomberie")) res = "Division PLOMBERIE: Nicoll et Viega chargés.";
-            aiChat.innerHTML += `<div class="ai-msg bot">> AI: ${res}</div>`;
+            aiChat.innerHTML += `<div class="ai-msg bot">> AI: Analyse terminée. Requête indexée.</div>`;
             aiChat.scrollTop = aiChat.scrollHeight;
         }, 600);
     }
 
     function aiBot(cmd) { document.getElementById("aiInput").value = cmd; handleAiChat(); }
 
-    // THEME SWITCHER
     function toggleTheme() {
         const body = document.body;
         const btn = document.getElementById("themeBtn");
-        if (body.getAttribute("data-theme") === "dark") {
-            body.setAttribute("data-theme", "light");
-            btn.innerText = "Dark_Mode";
-        } else {
-            body.setAttribute("data-theme", "dark");
-            btn.innerText = "Light_Mode";
-        }
+        const isDark = body.getAttribute("data-theme") === "dark";
+        body.setAttribute("data-theme", isDark ? "light" : "dark");
+        btn.innerText = isDark ? "Dark_Mode" : "Light_Mode";
     }
 
-    // INITIALISATION
     setInterval(() => { document.getElementById("liveTime").innerText = new Date().toTimeString().split(' ')[0]; }, 1000);
     renderDomaines();
 </script>
