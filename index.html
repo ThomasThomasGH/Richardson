@@ -11,7 +11,7 @@
             --text: #001a33; --border: #d1d1d1; --grid-color: rgba(0, 26, 51, 0.05);
             --online-green: #00ff88; --offline-red: #ff4444;
             --card-hover: #001a33; --card-hover-text: #ffffff;
-            --glow-power: 10px; --ai-panel-w: 380px; /* Glow réactivé */
+            --glow-power: 10px; --ai-panel-w: 380px;
         }
 
         [data-theme="dark"] {
@@ -21,7 +21,6 @@
             --card-hover: #111111;
         }
 
-        /* Reset propre */
         * { box-sizing: border-box; transition: background 0.2s, color 0.2s, border 0.2s; }
         
         body {
@@ -31,11 +30,8 @@
             height: 100vh; overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* Animations */
         @keyframes scanLine { 0% { top: -10%; opacity: 0; } 40% { opacity: 1; } 100% { top: 110%; opacity: 0; } }
         @keyframes pulseNeon { 50% { filter: brightness(1.2); box-shadow: 0 0 var(--glow-power) var(--online-green); } }
-        
-        /* Nouvelle animation de vibration pour Obsolete */
         @keyframes vibrate {
             0% { transform: translate(0); }
             20% { transform: translate(-1px, 1px); }
@@ -45,7 +41,16 @@
             100% { transform: translate(0); }
         }
 
-        /* UI */
+        /* Animation pour le message d'accueil */
+        @keyframes slideIn {
+            from { transform: translateX(120%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(120%); opacity: 0; }
+        }
+
         header {
             height: 80px; background: var(--surface); border-bottom: 2px solid var(--primary);
             display: flex; align-items: center; padding: 0 40px; z-index: 1000; flex-shrink: 0;
@@ -68,7 +73,6 @@
         .status-value { font-weight: 700; display: flex; align-items: center; gap: 10px; font-size: 0.7rem; }
         .dot { width: 10px; height: 10px; background: var(--online-green); border-radius: 50%; animation: pulseNeon 2s infinite; }
 
-        /* Content */
         .content { padding: 40px; overflow-y: auto; display: flex; flex-direction: column; }
         .view-header { font-family: 'JetBrains Mono'; font-size: 0.8rem; margin-bottom: 20px; color: var(--accent); font-weight: bold; }
         .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--primary); }
@@ -78,24 +82,14 @@
         .b-card::after { content: ""; position: absolute; left: 0; width: 100%; height: 2px; background: #fff; opacity: 0; }
         .b-card:hover::after { animation: scanLine 1s linear infinite; opacity: 1; }
 
-        /* --- NEON GLOW EFFECTS --- */
         .domain-color { height: 4px; width: 40px; margin-bottom: 20px; }
         .c-sanitaire { background-color: #1e88e5; box-shadow: 0 0 var(--glow-power) #1e88e5; }
         .c-chauffage { background-color: #ff9800; box-shadow: 0 0 var(--glow-power) #ff9800; }
         .c-plomberie { background-color: #4caf50; box-shadow: 0 0 var(--glow-power) #4caf50; }
 
         .catalog-status { align-self: flex-start; padding: 4px 8px; font-size: 0.6rem; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; }
-        
-        .valid { 
-            background: var(--online-green); color: #000; 
-            box-shadow: 0 0 var(--glow-power) var(--online-green); /* Glow sur Valide */
-        }
-        
-        .obsolete { 
-            background: var(--offline-red); color: #fff; 
-            box-shadow: 0 0 var(--glow-power) var(--offline-red); /* Glow sur Obsolete */
-            animation: vibrate 0.3s linear infinite; /* Vibration activée */
-        }
+        .valid { background: var(--online-green); color: #000; box-shadow: 0 0 var(--glow-power) var(--online-green); }
+        .obsolete { background: var(--offline-red); color: #fff; box-shadow: 0 0 var(--glow-power) var(--offline-red); animation: vibrate 0.3s linear infinite; }
 
         .btn-open {
             margin-top: auto; background: transparent; border: 1px solid var(--primary); color: inherit;
@@ -111,11 +105,27 @@
         .ai-msg.user { border-left-color: var(--primary); opacity: 0.8; }
         .ai-input-area { padding: 20px; border-top: 1px solid var(--border); }
         .ai-input { width: 100%; background: var(--bg); border: 1px solid var(--primary); padding: 12px; font-family: 'JetBrains Mono'; color: var(--text); }
-        
         .action-btn { background: var(--primary); color: var(--surface); border: none; padding: 10px 15px; font-family: 'JetBrains Mono'; font-size: 0.65rem; cursor: pointer; margin-left: 5px; }
+
+        /* Style du Toast (Message d'ouverture) */
+        #welcome-toast {
+            position: fixed; bottom: 30px; right: 30px; z-index: 9999;
+            background: var(--primary); color: var(--surface);
+            padding: 20px; border-left: 5px solid var(--accent);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            animation: slideIn 0.5s ease-out forwards;
+            max-width: 300px;
+        }
+        .toast-hide { animation: slideOut 0.5s ease-in forwards !important; }
     </style>
 </head>
 <body data-theme="light">
+
+<div id="welcome-toast">
+    <div style="color: var(--accent); font-weight: 900; margin-bottom: 5px;">[SYSTEM_ADVICE]</div>
+    Activez le <b>Dark_Mode</b> pour une immersion totale. C'est là que le système déploie tout son potentiel visuel.
+</div>
 
 <header>
     <div class="logo" onclick="renderDomaines()">RICHARDSON_<span>B.P.O.</span></div>
@@ -160,7 +170,7 @@
 </div>
 
 <script>
-    const currentYear = 2026; // Fixé pour la démo logicielle
+    const currentYear = 2026;
     const db = {
         "Sanitaire": { color: "c-sanitaire", brands: { "Grohe": ["2026", "2025"], "Hansgrohe": ["2026"], "Geberit": ["2024"] }},
         "Chauffage": { color: "c-chauffage", brands: { "Viessmann": ["2026"], "De Dietrich": ["2025"], "Atlantic": ["2026"] }},
@@ -171,7 +181,14 @@
     const aiChat = document.getElementById("aiChat");
     const viewTitle = document.getElementById("viewTitle");
 
-    // --- NAVIGATION ---
+    // Gestion du message d'accueil (Toast)
+    window.onload = () => {
+        setTimeout(() => {
+            const toast = document.getElementById('welcome-toast');
+            if(toast) toast.classList.add('toast-hide');
+        }, 6000); // Disparition après 6 secondes
+    };
+
     function renderDomaines() {
         setActiveNav('nav-global');
         viewTitle.innerText = "SYSTEM / ROOT / INDEX";
@@ -215,14 +232,11 @@
         });
     }
 
-    // --- RECHERCHE ---
     function handleSearch() {
         const query = document.getElementById("globalSearch").value.toLowerCase();
         if(!query) { renderDomaines(); return; }
-
         viewTitle.innerText = "SYSTEM / SEARCH_RESULTS";
         app.innerHTML = "";
-        
         Object.keys(db).forEach(dom => {
             Object.keys(db[dom].brands).forEach(brand => {
                 if(brand.toLowerCase().includes(query) || dom.toLowerCase().includes(query)) {
@@ -250,16 +264,13 @@
         document.getElementById(id).classList.add('active');
     }
 
-    // --- AI CHAT ---
     function handleAiChat() {
         const input = document.getElementById("aiInput");
         const val = input.value.trim();
         if(!val) return;
-
         aiChat.innerHTML += `<div class="ai-msg user">> ${val}</div>`;
         input.value = "";
         aiChat.scrollTop = aiChat.scrollHeight;
-
         setTimeout(() => {
             aiChat.innerHTML += `<div class="ai-msg bot">> CORE_LOG: Requête "${val}" traitée. Aucun conflit détecté dans la base Richardson.</div>`;
             aiChat.scrollTop = aiChat.scrollHeight;
@@ -268,7 +279,6 @@
 
     function aiBot(cmd) { document.getElementById("aiInput").value = cmd; handleAiChat(); }
 
-    // --- SYSTEM UTILS ---
     function toggleTheme() {
         const body = document.body;
         const btn = document.getElementById("themeBtn");
@@ -281,7 +291,6 @@
         document.getElementById("liveTime").innerText = new Date().toTimeString().split(' ')[0]; 
     }, 1000);
 
-    // Initialisation
     renderDomaines();
 </script>
 </body>
