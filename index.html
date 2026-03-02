@@ -19,7 +19,7 @@
 
         * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 0 !important; }
         
-        body { 
+        body {
             background-color: var(--bg);
             background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 40px 40px; font-family: 'Inter', sans-serif; margin: 0; color: var(--text); min-height: 100vh;
@@ -36,8 +36,8 @@
         #globalSearch { width: 100%; background: transparent; border: 1px solid var(--border); padding: 12px 20px; font-family: 'JetBrains Mono', monospace; color: var(--primary); font-size: 0.8rem; outline: none; }
 
         .header-actions { display: flex; gap: 10px; }
-        .action-btn { 
-            background: var(--primary); color: var(--surface); border: none; padding: 10px 15px; 
+        .action-btn {
+            background: var(--primary); color: var(--surface); border: none; padding: 10px 15px;
             font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 700; cursor: pointer; text-transform: uppercase;
         }
         .action-btn:hover { background: var(--accent); color: white; transform: translateY(-2px); }
@@ -45,7 +45,7 @@
         /* --- LAYOUT --- */
         .main-wrapper { display: grid; grid-template-columns: 320px 1fr; min-height: calc(100vh - 80px); }
 
-        aside { 
+        aside {
             border-right: 1px solid var(--border); background: var(--surface); padding: 40px;
             display: flex; flex-direction: column; position: sticky; top: 80px; height: calc(100vh - 80px);
         }
@@ -63,18 +63,18 @@
         /* --- CONTENT --- */
         .content { padding: 60px; }
         .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--primary); }
-        
-        .b-card { 
+
+        .b-card {
             background: var(--surface); padding: 50px 40px; cursor: pointer; display: flex; flex-direction: column; position: relative;
         }
         .b-card:hover { background: var(--primary); color: var(--surface); transform: scale(1.01); z-index: 2; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         .b-card h3 { font-size: 1.8rem; margin: 0; font-weight: 300; text-transform: uppercase; letter-spacing: -1px; }
-        
+
         .pin-tag { position: absolute; top: 20px; right: 20px; font-size: 0.55rem; font-family: 'JetBrains Mono'; color: var(--accent); border: 1px solid var(--accent); padding: 2px 5px; font-weight: 700; display: none; }
         .b-card.is-pinned .pin-tag { display: block; }
 
-        .btn-action { 
-            border: 1px solid var(--primary); background: transparent; color: inherit; padding: 15px; 
+        .btn-action {
+            border: 1px solid var(--primary); background: transparent; color: inherit; padding: 15px;
             font-weight: 700; text-transform: uppercase; font-size: 0.65rem; cursor: pointer; margin-top: 20px;
         }
         .b-card:hover .btn-action { border-color: var(--surface); }
@@ -87,6 +87,47 @@
         #toast.show { transform: translateY(0); }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        /* Améliorations visuelles */
+        .domain-color {
+            height: 4px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        .domain-color.sanitaire { background-color: #1e88e5; }
+        .domain-color.chauffage { background-color: #ff9800; }
+        .domain-color.plomberie { background-color: #4caf50; }
+
+        .catalog-year {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            margin-bottom: 10px;
+            opacity: 0.7;
+        }
+
+        .catalog-status {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 2px;
+            font-size: 0.6rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .catalog-status.valid {
+            background-color: var(--online-green);
+            color: #000;
+        }
+
+        .catalog-status.obsolete {
+            background-color: var(--offline-red);
+            color: #000;
+        }
+
+        .catalog-status.recent {
+            background-color: #ffc107;
+            color: #000;
+        }
     </style>
 </head>
 <body>
@@ -127,7 +168,7 @@
             </div>
         </div>
     </aside>
-    
+
     <main class="content">
         <div id="viewTitle" style="margin-bottom: 40px; opacity: 0.5; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">Root / Index</div>
         <div id="app" class="blueprint-grid"></div>
@@ -137,7 +178,7 @@
 <div id="toast">ACTION_SUCCESSFUL</div>
 
 <script>
-    const currentYear = 2026;
+    const currentYear = new Date().getFullYear();
     const db = {
         "Sanitaire": { "Grohe": ["2026", "2025"], "Hansgrohe": ["2026"], "Geberit": ["2024"], "Villeroy & Boch": ["2026"] },
         "Chauffage": { "Viessmann": ["2026"], "De Dietrich": ["2025"], "Saunier Duval": ["2026"], "Atlantic": ["2026"] },
@@ -161,7 +202,11 @@
         Object.keys(db).forEach((dom, i) => {
             const card = document.createElement("div");
             card.className = "b-card";
-            card.innerHTML = `<div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">SEC_ID_00${i+1}</div><h3>${dom}</h3>`;
+            card.innerHTML = `
+                <div class="domain-color ${dom.toLowerCase()}"></div>
+                <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">SEC_ID_00${i+1}</div>
+                <h3>${dom}</h3>
+            `;
             card.onclick = () => renderBrands(dom);
             app.appendChild(card);
         });
@@ -185,25 +230,24 @@
         });
     }
 
-    // NOUVEAU : Fonction de rendu des Favoris
     function renderPinned() {
         setActiveLink('nav-fav');
         viewTitle.innerText = "Root / Marques_Favorites";
         app.innerHTML = "";
-        
+
         if (pinnedBrands.length === 0) {
             app.innerHTML = `<div style="padding:40px; font-family:'JetBrains Mono'; opacity:0.5;">[ AUCUNE MARQUE ÉPINGLÉE ] <br> Faites un clic-droit sur une marque pour l'ajouter ici.</div>`;
             return;
         }
 
         pinnedBrands.forEach(brand => {
-            // Trouver le domaine pour permettre l'ouverture des fichiers
             let foundDom = "";
             Object.keys(db).forEach(dom => { if(db[dom][brand]) foundDom = dom; });
 
             const card = document.createElement("div");
             card.className = "b-card is-pinned";
             card.innerHTML = `
+                <div class="domain-color ${foundDom.toLowerCase()}"></div>
                 <div class="pin-tag">PINNED</div>
                 <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">FAV_DOC</div>
                 <h3>${brand}</h3>
@@ -217,15 +261,30 @@
     function renderFiles(dom, brand) {
         viewTitle.innerText = `Root / ${dom} / ${brand}`;
         app.innerHTML = `<div class="b-card" onclick="renderBrands('${dom}')" style="border:1px solid var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
+
         db[dom][brand].forEach(year => {
-            const isOld = parseInt(year) < currentYear;
+            const yearInt = parseInt(year);
+            let status, statusClass;
+
+            if (yearInt === currentYear) {
+                status = "RECENT";
+                statusClass = "recent";
+            } else if (yearInt === currentYear - 1) {
+                status = "VALIDATED";
+                statusClass = "valid";
+            } else {
+                status = "OBSOLETE";
+                statusClass = "obsolete";
+            }
+
             const card = document.createElement("div");
             card.className = "b-card";
             card.innerHTML = `
-                <div style="height: 2px; background: ${isOld ? 'var(--offline-red)' : 'var(--online-green)'}; margin-bottom: 25px;"></div>
-                <div style="font-family:'JetBrains Mono'; font-size:0.6rem; color:${isOld ? 'var(--offline-red)' : 'var(--online-green)'}">${isOld ? 'OBSOLETE' : 'VALIDATED'}</div>
-                <h3>EDITION ${year}</h3>
-                <button class="btn-action" onclick="showToast('Chargement PDF...')">OUVRIR_L_ARCHIVE</button>
+                <div class="domain-color ${dom.toLowerCase()}"></div>
+                <div class="catalog-status ${statusClass}">${status}</div>
+                <div class="catalog-year">EDITION ${year}</div>
+                <h3>${brand}</h3>
+                <button class="btn-action" onclick="openCatalog('${dom}', '${brand}', '${year}')">OUVRIR_L_ARCHIVE</button>
             `;
             app.appendChild(card);
         });
@@ -240,11 +299,9 @@
             showToast(brand + " épinglé");
         }
         localStorage.setItem('richardson_pinned', JSON.stringify(pinnedBrands));
-        
-        // Rafraîchir la vue actuelle
+
         if(document.getElementById('nav-fav').classList.contains('active')) renderPinned();
         else {
-            // Si on est dans un domaine, on rafraîchit les marques
             const currentDom = viewTitle.innerText.split(' / ')[1];
             if(db[currentDom]) renderBrands(currentDom);
         }
@@ -277,16 +334,95 @@
         a.click();
     }
 
+    function openCatalog(dom, brand, year) {
+        showToast(`Ouverture du catalogue ${brand} ${year}`);
+        // ICI TU PEUX AJOUTER LA LOGIQUE POUR OUVRIR LE CATALOGUE
+        console.log(`Ouvrir le catalogue: Domaine=${dom}, Marque=${brand}, Année=${year}`);
+    }
+
     function updateTime() {
         const now = new Date();
         document.getElementById("liveTime").innerText = now.toTimeString().split(' ')[0];
         document.getElementById("liveDate").innerText = now.toLocaleDateString('fr-FR');
     }
 
+    // Recherche globale
+    document.getElementById("globalSearch").addEventListener("input", function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        if (searchTerm.length < 2) {
+            if (document.getElementById('nav-all').classList.contains('active')) {
+                renderDomaines();
+            } else if (document.getElementById('nav-fav').classList.contains('active')) {
+                renderPinned();
+            }
+            return;
+        }
+
+        app.innerHTML = "";
+        let found = false;
+
+        // Recherche dans les domaines
+        Object.keys(db).forEach(dom => {
+            if (dom.toLowerCase().includes(searchTerm)) {
+                const card = document.createElement("div");
+                card.className = "b-card";
+                card.innerHTML = `
+                    <div class="domain-color ${dom.toLowerCase()}"></div>
+                    <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">SEC_ID_00${Object.keys(db).indexOf(dom)+1}</div>
+                    <h3>${dom}</h3>
+                `;
+                card.onclick = () => renderBrands(dom);
+                app.appendChild(card);
+                found = true;
+            }
+
+            // Recherche dans les marques
+            Object.keys(db[dom]).forEach(brand => {
+                if (brand.toLowerCase().includes(searchTerm)) {
+                    const card = document.createElement("div");
+                    card.className = "b-card";
+                    card.innerHTML = `
+                        <div class="domain-color ${dom.toLowerCase()}"></div>
+                        <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">MQR_${brand.toUpperCase()}</div>
+                        <h3>${brand}</h3>
+                        <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4;">${dom}</div>
+                    `;
+                    card.onclick = () => renderFiles(dom, brand);
+                    app.appendChild(card);
+                    found = true;
+                }
+
+                // Recherche dans les années
+                db[dom][brand].forEach(year => {
+                    if (year.includes(searchTerm)) {
+                        const card = document.createElement("div");
+                        card.className = "b-card";
+                        card.innerHTML = `
+                            <div class="domain-color ${dom.toLowerCase()}"></div>
+                            <div class="catalog-year">EDITION ${year}</div>
+                            <h3>${brand}</h3>
+                            <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4;">${dom}</div>
+                        `;
+                        card.onclick = () => renderFiles(dom, brand);
+                        app.appendChild(card);
+                        found = true;
+                    }
+                });
+            });
+        });
+
+        if (!found) {
+            app.innerHTML = `<div style="padding:40px; font-family:'JetBrains Mono'; opacity:0.5;">AUCUN RÉSULTAT POUR "${searchTerm.toUpperCase()}"</div>`;
+        }
+    });
+
+    function toggleHelp() {
+        showToast("Aide en cours de développement");
+    }
+
     setInterval(updateTime, 1000);
     updateTime();
     renderDomaines();
-
 </script>
 </body>
 </html>
