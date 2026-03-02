@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDSON | B.P.O. v4.6 (Fix & Glow)</title>
+    <title>RICHARDSON | B.P.O. v4.7</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -11,13 +11,14 @@
             --text: #001a33; --border: #d1d1d1; --grid-color: rgba(0, 26, 51, 0.05);
             --online-green: #00ff88; --offline-red: #ff4444;
             --card-hover: #001a33; --card-hover-text: #ffffff;
+            --laser-color: #ffffff; /* Laser blanc */
             --neon-glow: 0 0 0px transparent;
         }
 
         [data-theme="dark"] {
             --bg: #050505; --surface: #0a0a0a; --primary: #ffffff;
             --text: #e0e0e0; --border: #1a1a1a; --grid-color: rgba(255, 255, 255, 0.02);
-            --card-hover: #121212; --card-hover-text: #ffffff;
+            --card-hover: #111111; --card-hover-text: #ffffff;
             --neon-glow: 0 0 10px;
         }
 
@@ -29,10 +30,10 @@
             background-size: 40px 40px; font-family: 'Inter', sans-serif; margin: 0; color: var(--text); min-height: 100vh;
         }
 
-        /* --- ANIMATIONS SYSTÈMIQUES --- */
-        @keyframes scanLine {
+        /* --- ANIMATIONS --- */
+        @keyframes scanLineWhite {
             0% { top: -5%; opacity: 0; }
-            40% { opacity: 0.8; }
+            40% { opacity: 1; }
             100% { top: 105%; opacity: 0; }
         }
 
@@ -92,23 +93,25 @@
             background: var(--surface); padding: 50px 40px; cursor: pointer; 
             display: flex; flex-direction: column; position: relative; overflow: hidden;
             animation: cardFadeIn 0.4s ease-out backwards;
+            border: 1px solid transparent;
         }
 
-        /* L'effet de scan laser */
+        /* L'effet de scan laser blanc */
         .b-card::after {
             content: ""; position: absolute; left: 0; width: 100%; height: 2px;
-            background: var(--accent); opacity: 0; pointer-events: none; z-index: 10;
+            background: var(--laser-color); opacity: 0; pointer-events: none; z-index: 10;
+            box-shadow: 0 0 15px var(--laser-color);
         }
-        .b-card:hover::after { animation: scanLine 0.8s linear; }
+        .b-card:hover::after { animation: scanLineWhite 0.8s linear; }
 
-        /* Correction du survol : Sombre sur Sombre */
+        /* Survol : Fond sombre, texte blanc, bordure blanche */
         .b-card:hover { 
             background: var(--card-hover); 
             color: var(--card-hover-text); 
             transform: scale(1.01); 
             z-index: 2; 
-            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-            border: 1px solid var(--accent);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            border: 1px solid var(--laser-color); /* Bordure blanche au survol */
         }
 
         .b-card h3 { font-size: 1.8rem; margin: 0; font-weight: 300; text-transform: uppercase; letter-spacing: -1px; }
@@ -116,7 +119,7 @@
         .pin-tag { 
             position: absolute; top: 20px; right: 20px; font-size: 0.55rem; font-family: 'JetBrains Mono'; 
             color: var(--accent); border: 1px solid var(--accent); padding: 2px 5px; font-weight: 700; 
-            display: none; box-shadow: var(--neon-glow) var(--accent);
+            display: none;
         }
         .b-card.is-pinned .pin-tag { display: block; }
 
@@ -128,15 +131,15 @@
         .c-plomberie { --line-color: #4caf50; background-color: #4caf50; }
 
         .catalog-status { display: inline-block; padding: 2px 8px; font-size: 0.6rem; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
-        .catalog-status.valid { background: var(--online-green); color: #000; box-shadow: var(--neon-glow) var(--online-green); }
-        .catalog-status.recent { background: #ffc107; color: #000; box-shadow: var(--neon-glow) #ffc107; }
-        .catalog-status.obsolete { background: var(--offline-red); color: #fff; box-shadow: var(--neon-glow) var(--offline-red); }
+        .catalog-status.valid { background: var(--online-green); color: #000; }
+        .catalog-status.recent { background: #ffc107; color: #000; }
+        .catalog-status.obsolete { background: var(--offline-red); color: #fff; }
 
         .btn-action {
             border: 1px solid var(--primary); background: transparent; color: inherit; padding: 15px;
             font-weight: 700; text-transform: uppercase; font-size: 0.65rem; cursor: pointer; margin-top: 20px;
         }
-        .b-card:hover .btn-action { border-color: var(--accent); background: rgba(227, 6, 19, 0.1); }
+        .b-card:hover .btn-action { border-color: var(--laser-color); }
 
         #toast {
             position: fixed; bottom: 30px; right: 30px; background: var(--primary); color: var(--surface);
@@ -148,16 +151,14 @@
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
-<body data-theme="dark">
-
-<header>
+<body data-theme="light"> <header>
     <a href="#" class="logo" onclick="renderDomaines()">RICHARDSON_<span>B.P.O.</span></a>
     <div class="search-container">
         <input type="text" id="globalSearch" placeholder="ACCESS_DATABASE // SCANNER L'INDEX...">
     </div>
     <div class="header-actions">
         <button class="action-btn" onclick="exportInventory()">[ ↓ ] Rapport</button>
-        <button class="action-btn" onclick="toggleTheme()" id="themeBtn">Light_Mode</button>
+        <button class="action-btn" onclick="toggleTheme()" id="themeBtn">Dark_Mode</button>
     </div>
 </header>
 
@@ -172,7 +173,7 @@
         <div id="statusBar">
             <div class="status-item"><span style="opacity:0.4">Node_Agence</span><span class="status-value" style="color: var(--accent);">MOUGINS_06_FR</span></div>
             <div class="status-item"><span style="opacity:0.4">Status</span><span class="status-value"><div class="dot online"></div>SYSTEM_STABLE</span></div>
-            <div class="status-item"><span style="opacity:0.4">Uptime</span><span class="status-value" id="liveTime">00:00:00</span></div>
+            <div class="status-item"><span style="opacity:0.4">Timestamp</span><span class="status-value" id="liveTime">00:00:00</span></div>
         </div>
     </aside>
 
@@ -219,7 +220,7 @@
     }
 
     function renderBrands(dom) {
-        viewTitle.innerText = `Root / ${dom}`;
+        viewTitle.innerText = `Root / ${dom.toUpperCase()}`;
         app.innerHTML = `<div class="b-card" onclick="renderDomaines()" style="border-color:var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
         Object.keys(db[dom].brands).forEach((brand, i) => {
             const isPinned = pinnedBrands.includes(brand);
@@ -291,9 +292,7 @@
         document.getElementById('themeBtn').innerText = nextTheme === 'dark' ? "Light_Mode" : "Dark_Mode";
     }
 
-    function exportInventory() {
-        showToast("Génération du rapport...");
-    }
+    function exportInventory() { showToast("Génération du rapport..."); }
 
     setInterval(() => {
         document.getElementById("liveTime").innerText = new Date().toTimeString().split(' ')[0];
