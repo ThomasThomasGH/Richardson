@@ -3,174 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Outil d'Archivage des Catalogues</title>
+    <title>Richardson - Archivage Digital</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* --- CSS : Design & Expérience Utilisateur --- */
         :root {
-            --primary: #1e293b;
-            --accent: #3b82f6;
-            --bg: #f8fafc;
-            --green: #22c55e;
-            --orange: #f97316;
-            --red: #ef4444;
-            --white: #ffffff;
+            --richardson-blue: #004b93;
+            --richardson-red: #e30613;
+            --bg-light: #f4f7fa;
+            --text-dark: #1a202c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
         }
 
-        body { font-family: 'Inter', system-ui, sans-serif; background-color: var(--bg); margin: 0; color: #1e293b; }
-        header { background: var(--primary); color: white; padding: 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         
-        #app { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
-        
-        .card { 
-            background: var(--white); padding: 1.5rem; border-radius: 12px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer;
-            transition: all 0.2s ease; border: 1px solid #e2e8f0;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 600; font-size: 1.1rem; min-height: 80px; text-align: center;
+        body { 
+            background-color: var(--bg-light); 
+            margin: 0; 
+            color: var(--text-dark);
+            line-height: 1.6;
         }
-        .card:hover { transform: translateY(-3px); border-color: var(--accent); color: var(--accent); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
 
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-
-        /* Styles de statut (Couleurs) */
-        .status-card { color: white; display: flex; flex-direction: column; gap: 0.5rem; cursor: pointer; border-radius: 8px; padding: 1rem; }
-        .green { background-color: var(--green); }
-        .orange { background-color: var(--orange); }
-        .red { background-color: var(--red); }
-
-        .warning-text { font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 5px; border-radius: 4px; font-weight: normal; margin-top: 5px; }
-
-        .btn-back { 
-            background: #64748b; color: white; border: none; padding: 0.6rem 1.2rem; 
-            border-radius: 6px; cursor: pointer; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
+        /* Header & Logo */
+        header {
+            background: #ffffff;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-bottom: 4px solid var(--richardson-blue);
         }
-        .btn-back:hover { background: #475569; }
 
-        h2 { border-left: 4px solid var(--accent); padding-left: 1rem; margin-bottom: 1.5rem; }
+        .logo-placeholder {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--richardson-blue);
+            text-transform: uppercase;
+            letter-spacing: -1px;
+        }
+
+        .logo-placeholder span { color: var(--richardson-red); }
+
+        .container {
+            max-width: 1000px;
+            margin: 3rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Breadcrumbs / Fil d'Ariane */
+        .breadcrumb {
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #718096;
+        }
+
+        h2 { 
+            font-weight: 700; 
+            margin-bottom: 2rem; 
+            color: var(--richardson-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Grid System */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Card Design */
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border: 1px solid #edf2f7;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            border-color: var(--richardson-blue);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 5px;
+            background: var(--richardson-blue);
+            opacity: 0; transition: 0.3s;
+        }
+
+        .card:hover::before { opacity: 1; }
+
+        .card i { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+
+        /* Catalog Status Styles */
+        .catalog-card {
+            border-left: 8px solid;
+            text-align: left;
+            padding: 1.5rem;
+        }
+
+        .status-green { border-left-color: var(--success); }
+        .status-orange { border-left-color: var(--warning); }
+        .status-red { border-left-color: var(--danger); }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .badge-green { background: #dcfce7; color: var(--success); }
+        .badge-orange { background: #fef3c7; color: #b45309; }
+        .badge-red { background: #fee2e2; color: var(--danger); }
+
+        .warning-box {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            padding: 10px;
+            background: #fff5f5;
+            color: #c53030;
+            border-radius: 6px;
+            border: 1px solid #feb2b2;
+        }
+
+        /* Buttons */
+        .btn-back {
+            background: none;
+            border: 1px solid var(--richardson-blue);
+            color: var(--richardson-blue);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: 0.2s;
+        }
+
+        .btn-back:hover {
+            background: var(--richardson-blue);
+            color: white;
+        }
+
+        .btn-view {
+            margin-top: 1rem;
+            display: inline-block;
+            background: var(--richardson-blue);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
     </style>
 </head>
 <body>
 
 <header>
-    <h1>📚 Archivage des Catalogues</h1>
+    <div class="logo-placeholder">RICHARD<span>SON</span></div>
+    <div style="font-size: 0.8rem; text-align: right; color: #718096;">
+        Espace Commercial v2.0<br>
+        <strong>Base de données Catalogues</strong>
+    </div>
 </header>
 
-<div id="app">
+<div class="container" id="app">
     </div>
 
 <script>
-/* ============================================================
-   1. BASE DE DONNÉES (À modifier pour ajouter des marques)
-   ============================================================ */
-const cataloguesData = {
-    "Sanitaire": {
-        "Grohe": ["2023", "2024", "2025"],
-        "Hansgrohe": ["2024", "2025"],
-        "Geberit": ["2022", "2024"]
-    },
-    "Chauffage": {
-        "Viessmann": ["2024", "2025"],
-        "De Dietrich": ["2023", "2025"],
-        "Saunier Duval": ["2024"]
-    },
-    "Plomberie": {
-        "Nicoll": ["2023", "2024"],
-        "Viega": ["2024", "2025"]
-    }
-};
-
-/* ============================================================
-   2. LOGIQUE MÉTIER & ÉTAT
-   ============================================================ */
-let state = { domaine: null, marque: null };
-
-function getStatus(year) {
-    const currentYear = new Date().getFullYear();
-    const currentMonth = new Date().getMonth(); // 0 = Janvier, 11 = Décembre
-
-    const selectedYear = parseInt(year);
-
-    // Règle 1 : Si l'année est passée -> ROUGE
-    if (selectedYear < currentYear) return "red";
-
-    // Règle 2 : Si c'est l'année en cours
-    if (selectedYear === currentYear) {
-        // Moins de 6 mois (Janvier à Juin inclus) -> VERT
-        if (currentMonth < 6) return "green";
-        // Plus de 6 mois (Juillet à Décembre) -> ORANGE
-        else return "orange";
-    }
-
-    // Règle 3 : Année future -> VERT (nouveau catalogue)
-    return "green";
-}
-
-/* ============================================================
-   3. MOTEUR DE RENDU (L'interface dynamique)
-   ============================================================ */
-const app = document.getElementById("app");
-
-function renderDomaines() {
-    app.innerHTML = `<h2>1. Sélectionnez un Domaine</h2>`;
-    const grid = document.createElement("div");
-    grid.className = "grid";
-
-    Object.keys(cataloguesData).forEach(domaine => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerText = domaine;
-        card.onclick = () => { state.domaine = domaine; renderMarques(); };
-        grid.appendChild(card);
-    });
-    app.appendChild(grid);
-}
-
-function renderMarques() {
-    app.innerHTML = `<button class="btn-back" onclick="renderDomaines()">⬅ Retour aux Domaines</button>`;
-    app.innerHTML += `<h2>2. Marques : ${state.domaine}</h2>`;
+    /* ============================================================
+       DONNÉES DE TEST (Simulées pour preuve de concept)
+       ============================================================ */
+    const currentYear = new Date().getFullYear(); // 2026 pour ton test
     
-    const grid = document.createElement("div");
-    grid.className = "grid";
+    const catalogues = {
+        "Sanitaire 🚿": {
+            "Grohe": [currentYear.toString(), (currentYear-1).toString()],
+            "Hansgrohe": [currentYear.toString()],
+            "Geberit": [(currentYear-2).toString()]
+        },
+        "Chauffage 🔥": {
+            "Viessmann": [currentYear.toString()],
+            "De Dietrich": [(currentYear-1).toString()],
+            "Saunier Duval": [currentYear.toString()]
+        },
+        "Plomberie 🔧": {
+            "Nicoll": [(currentYear-1).toString()],
+            "Viega": [currentYear.toString()]
+        }
+    };
 
-    Object.keys(cataloguesData[state.domaine]).forEach(marque => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerText = marque;
-        card.onclick = () => { state.marque = marque; renderAnnees(); };
-        grid.appendChild(card);
-    });
-    app.appendChild(grid);
-}
+    let state = { domaine: null, marque: null };
 
-function renderAnnees() {
-    app.innerHTML = `<button class="btn-back" onclick="renderMarques()">⬅ Retour aux Marques</button>`;
-    app.innerHTML += `<h2>3. Choisir l'édition (${state.marque})</h2>`;
-    
-    const grid = document.createElement("div");
-    grid.className = "grid";
+    /* ============================================================
+       LOGIQUE DE COULEUR (Basée sur l'année et le mois actuel)
+       ============================================================ */
+    function getStatusInfo(year) {
+        const now = new Date();
+        const y = parseInt(year);
+        const m = now.getMonth(); // 0-11
 
-    cataloguesData[state.domaine][state.marque].forEach(year => {
-        const status = getStatus(year);
-        const card = document.createElement("div");
-        card.className = `status-card ${status}`;
+        // ROUGE : Année précédente ou plus vieux
+        if (y < currentYear) {
+            return { class: 'status-red', badge: 'badge-red', label: 'Obsolète', warning: true };
+        }
         
-        let warningHTML = (status === "red") ? `<div class="warning-text">⚠ Attention : Validité à confirmer avec le fournisseur !</div>` : "";
-        
-        card.innerHTML = `<strong>Édition ${year}</strong> ${warningHTML}`;
-        
-        // Action : Simule l'ouverture d'un PDF
-        card.onclick = () => {
-            alert(`Ouverture du PDF : catalogues/${state.domaine.toLowerCase()}/${state.marque.toLowerCase()}/${year}/catalogue.pdf`);
-            // Pour un vrai lien : window.open(`catalogues/${state.domaine}/${state.marque}/${year}/catalogue.pdf`, '_blank');
-        };
-        grid.appendChild(card);
-    });
-    app.appendChild(grid);
-}
+        // ORANGE : On est en deuxième moitié de l'année en cours (Juillet+)
+        if (y === currentYear && m >= 6) {
+            return { class: 'status-orange', badge: 'badge-orange', label: 'À vérifier', warning: false };
+        }
 
-// Lancement initial
-renderDomaines();
+        // VERT : Année en cours, première moitié
+        return { class: 'status-green', badge: 'badge-green', label: 'À jour', warning: false };
+    }
 
+    /* ============================================================
+       MOTEUR DE RENDU
+       ============================================================ */
+    const app = document.getElementById("app");
+
+    function renderDomaines() {
+        app.innerHTML = `<h2>Sélectionnez un univers métier</h2>`;
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        Object.keys(catalogues).forEach(dom => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `<div>${dom}</div>`;
+            card.onclick = () => { state.domaine = dom; renderMarques(); };
+            grid.appendChild(card);
+        });
+        app.appendChild(grid);
+    }
+
+    function renderMarques() {
+        app.innerHTML = `<button class="btn-back" onclick="renderDomaines()">⬅ Retour</button>`;
+        app.innerHTML += `<h2>Marques : ${state.domaine}</h2>`;
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        Object.keys(catalogues[state.domaine]).forEach(m => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `<div>${m}</div>`;
+            card.onclick = () => { state.marque = m; renderAnnees(); };
+            grid.appendChild(card);
+        });
+        app.appendChild(grid);
+    }
+
+    function renderAnnees() {
+        app.innerHTML = `<button class="btn-back" onclick="renderMarques()">⬅ Retour</button>`;
+        app.innerHTML += `<h2>Éditions disponibles : ${state.marque}</h2>`;
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        catalogues[state.domaine][state.marque].forEach(yr => {
+            const status = getStatusInfo(yr);
+            const card = document.createElement("div");
+            card.className = `card catalog-card ${status.class}`;
+            
+            card.innerHTML = `
+                <span class="badge ${status.badge}">${status.label}</span>
+                <div style="font-size:1.2rem; font-weight:700;">Catalogue Général ${yr}</div>
+                <div style="font-size:0.8rem; color:#718096; margin-top:5px;">Format: PDF Digital</div>
+                ${status.warning ? `<div class="warning-box">⚠ Attention : Validité à confirmer avec le fournisseur avant chiffrage !</div>` : ''}
+                <a href="#" class="btn-view" onclick="alert('Ouverture du PDF ${yr}...')">Consulter le document</a>
+            `;
+            grid.appendChild(card);
+        });
+        app.appendChild(grid);
+    }
+
+    // Initialisation
+    renderDomaines();
 </script>
+
 </body>
 </html>
