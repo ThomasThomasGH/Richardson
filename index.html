@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDSON | B.P.O. v4.7</title>
+    <title>RICHARDSON | B.P.O. v4.9 FINAL (Stable)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -11,15 +11,13 @@
             --text: #001a33; --border: #d1d1d1; --grid-color: rgba(0, 26, 51, 0.05);
             --online-green: #00ff88; --offline-red: #ff4444;
             --card-hover: #001a33; --card-hover-text: #ffffff;
-            --laser-color: #ffffff; /* Laser blanc */
-            --neon-glow: 0 0 0px transparent;
+            --laser-white: #ffffff;
         }
 
         [data-theme="dark"] {
             --bg: #050505; --surface: #0a0a0a; --primary: #ffffff;
             --text: #e0e0e0; --border: #1a1a1a; --grid-color: rgba(255, 255, 255, 0.02);
             --card-hover: #111111; --card-hover-text: #ffffff;
-            --neon-glow: 0 0 10px;
         }
 
         * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 0 !important; }
@@ -28,21 +26,30 @@
             background-color: var(--bg);
             background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 40px 40px; font-family: 'Inter', sans-serif; margin: 0; color: var(--text); min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* --- ANIMATIONS --- */
+        /* --- ANIMATIONS SYSTÉMIQUES --- */
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(30px); filter: blur(10px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+
         @keyframes scanLineWhite {
-            0% { top: -5%; opacity: 0; }
+            0% { top: -10%; opacity: 0; }
             40% { opacity: 1; }
-            100% { top: 105%; opacity: 0; }
+            100% { top: 110%; opacity: 0; }
         }
 
-        @keyframes cardFadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes glitchRed {
+            0% { transform: translate(0); filter: hue-rotate(0deg); }
+            25% { transform: translate(-2px, 1px); filter: brightness(1.2); }
+            50% { transform: translate(2px, -1px); }
+            75% { transform: translate(-1px, -1px); filter: contrast(1.5); }
+            100% { transform: translate(0); }
         }
 
-        /* --- HEADER --- */
+        /* --- UI STRUCTURE --- */
         header {
             height: 80px; background: var(--surface); border-bottom: 2px solid var(--primary);
             display: flex; align-items: center; padding: 0 40px; position: sticky; top: 0; z-index: 1000;
@@ -51,20 +58,6 @@
         .logo { font-weight: 900; font-size: 1.4rem; letter-spacing: 4px; text-decoration: none; color: var(--primary); }
         .logo span { color: var(--accent); }
 
-        .search-container { flex-grow: 1; margin: 0 60px; }
-        #globalSearch { 
-            width: 100%; background: transparent; border: 1px solid var(--border); padding: 12px 20px; 
-            font-family: 'JetBrains Mono', monospace; color: var(--primary); font-size: 0.8rem; outline: none; 
-        }
-
-        .header-actions { display: flex; gap: 10px; }
-        .action-btn {
-            background: var(--primary); color: var(--surface); border: none; padding: 10px 15px;
-            font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 700; cursor: pointer; text-transform: uppercase;
-        }
-        .action-btn:hover { background: var(--accent); transform: translateY(-2px); }
-
-        /* --- LAYOUT --- */
         .main-wrapper { display: grid; grid-template-columns: 320px 1fr; min-height: calc(100vh - 80px); }
 
         aside {
@@ -76,121 +69,117 @@
             text-decoration: none; color: var(--primary); font-size: 0.75rem; font-weight: 700; 
             display: block; margin-bottom: 25px; opacity: 0.5; cursor: pointer; text-transform: uppercase;
         }
-        .nav-link:hover, .nav-link.active { opacity: 1; color: var(--accent); }
+        .nav-link.active { opacity: 1; color: var(--accent); border-left: 3px solid var(--accent); padding-left: 10px; }
 
-        /* --- STATUS HUB --- */
-        #statusBar { margin-top: auto; padding-top: 30px; border-top: 2px solid var(--primary); font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; }
-        .status-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px; text-transform: uppercase; }
-        .status-value { font-weight: 700; display: flex; align-items: center; gap: 6px; font-size: 0.7rem; }
-        .dot { width: 8px; height: 8px; border: 1px solid var(--primary); }
-        .dot.online { background: var(--online-green); box-shadow: var(--neon-glow) var(--online-green); animation: pulse 2s infinite; }
-
-        /* --- CONTENT & CARDS --- */
         .content { padding: 60px; }
-        .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--primary); }
+        .blueprint-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+            gap: 1px; background: var(--border); border: 1px solid var(--primary); 
+        }
 
         .b-card {
             background: var(--surface); padding: 50px 40px; cursor: pointer; 
             display: flex; flex-direction: column; position: relative; overflow: hidden;
-            animation: cardFadeIn 0.4s ease-out backwards;
+            animation: cardEntrance 0.6s cubic-bezier(0.2, 1, 0.3, 1) both;
             border: 1px solid transparent;
         }
 
-        /* L'effet de scan laser blanc */
+        /* Laser blanc au survol */
         .b-card::after {
-            content: ""; position: absolute; left: 0; width: 100%; height: 2px;
-            background: var(--laser-color); opacity: 0; pointer-events: none; z-index: 10;
-            box-shadow: 0 0 15px var(--laser-color);
+            content: ""; position: absolute; left: 0; width: 100%; height: 3px;
+            background: #ffffff; opacity: 0; pointer-events: none; z-index: 10;
+            box-shadow: 0 0 15px #ffffff;
         }
-        .b-card:hover::after { animation: scanLineWhite 0.8s linear; }
+        .b-card:hover::after { animation: scanLineWhite 0.8s ease-in-out; }
 
-        /* Survol : Fond sombre, texte blanc, bordure blanche */
         .b-card:hover { 
             background: var(--card-hover); 
             color: var(--card-hover-text); 
-            transform: scale(1.01); 
-            z-index: 2; 
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
-            border: 1px solid var(--laser-color); /* Bordure blanche au survol */
+            transform: scale(1.02); 
+            z-index: 10; 
+            border: 1px solid #ffffff;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
         }
 
-        .b-card h3 { font-size: 1.8rem; margin: 0; font-weight: 300; text-transform: uppercase; letter-spacing: -1px; }
+        .b-card h3 { font-size: 2rem; margin: 0; font-weight: 300; text-transform: uppercase; letter-spacing: -1px; }
 
-        .pin-tag { 
-            position: absolute; top: 20px; right: 20px; font-size: 0.55rem; font-family: 'JetBrains Mono'; 
-            color: var(--accent); border: 1px solid var(--accent); padding: 2px 5px; font-weight: 700; 
-            display: none;
+        .catalog-status { 
+            display: inline-block; padding: 4px 10px; font-size: 0.65rem; 
+            font-weight: 800; margin-bottom: 20px; text-transform: uppercase; font-family: 'JetBrains Mono';
         }
-        .b-card.is-pinned .pin-tag { display: block; }
-
-        .domain-color { height: 4px; width: 100%; margin-bottom: 20px; }
-        [data-theme="dark"] .domain-color { box-shadow: var(--neon-glow) var(--line-color); }
-        
-        .c-sanitaire { --line-color: #1e88e5; background-color: #1e88e5; }
-        .c-chauffage { --line-color: #ff9800; background-color: #ff9800; }
-        .c-plomberie { --line-color: #4caf50; background-color: #4caf50; }
-
-        .catalog-status { display: inline-block; padding: 2px 8px; font-size: 0.6rem; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
         .catalog-status.valid { background: var(--online-green); color: #000; }
         .catalog-status.recent { background: #ffc107; color: #000; }
-        .catalog-status.obsolete { background: var(--offline-red); color: #fff; }
+        .catalog-status.obsolete { 
+            background: var(--offline-red); color: #fff; 
+            animation: glitchRed 0.2s infinite; 
+        }
+
+        .domain-color { height: 6px; width: 100%; margin-bottom: 25px; }
+        .c-sanitaire { background-color: #1e88e5; }
+        .c-chauffage { background-color: #ff9800; }
+        .c-plomberie { background-color: #4caf50; }
 
         .btn-action {
-            border: 1px solid var(--primary); background: transparent; color: inherit; padding: 15px;
-            font-weight: 700; text-transform: uppercase; font-size: 0.65rem; cursor: pointer; margin-top: 20px;
+            border: 1px solid var(--primary); background: transparent; color: inherit; padding: 18px;
+            font-weight: 700; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; margin-top: 25px;
+            letter-spacing: 1px;
         }
-        .b-card:hover .btn-action { border-color: var(--laser-color); }
+        .b-card:hover .btn-action { border-color: #ffffff; background: rgba(255,255,255,0.05); }
 
         #toast {
             position: fixed; bottom: 30px; right: 30px; background: var(--primary); color: var(--surface);
-            padding: 15px 25px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
-            transform: translateY(150%); transition: 0.4s; z-index: 3000; border: 1px solid var(--accent);
+            padding: 20px 30px; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
+            transform: translateY(150%); transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+            z-index: 3000; border: 1px solid var(--accent);
         }
         #toast.show { transform: translateY(0); }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        #statusBar { margin-top: auto; font-family: 'JetBrains Mono'; font-size: 0.65rem; border-top: 1px solid var(--border); padding-top: 20px; }
+        
+        .action-btn {
+            background: var(--primary); color: var(--surface); border: none; padding: 12px 20px;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 700; cursor: pointer;
+        }
     </style>
 </head>
-<body data-theme="light"> <header>
+<body data-theme="light">
+
+<header>
     <a href="#" class="logo" onclick="renderDomaines()">RICHARDSON_<span>B.P.O.</span></a>
-    <div class="search-container">
-        <input type="text" id="globalSearch" placeholder="ACCESS_DATABASE // SCANNER L'INDEX...">
+    <div style="flex-grow: 1; margin: 0 60px;">
+        <input type="text" id="globalSearch" oninput="handleSearch()" placeholder="SYSTEM_SCANNER_INDEX..." style="width:100%; background:transparent; border:1px solid var(--border); padding:12px; font-family:'JetBrains Mono'; color:inherit; outline:none;">
     </div>
     <div class="header-actions">
-        <button class="action-btn" onclick="exportInventory()">[ ↓ ] Rapport</button>
         <button class="action-btn" onclick="toggleTheme()" id="themeBtn">Dark_Mode</button>
     </div>
 </header>
 
 <div class="main-wrapper">
     <aside>
-        <div style="font-size: 0.6rem; font-weight: 800; margin-bottom: 30px; opacity: 0.4; letter-spacing: 2px;">SYSTEM_NAV</div>
         <nav>
-            <div id="nav-all" onclick="renderDomaines()" class="nav-link active">// TOUS_LES_DOCUMENTS</div>
-            <div id="nav-fav" onclick="renderPinned()" class="nav-link">// MARQUES_FAVORITES</div>
+            <div id="nav-all" onclick="renderDomaines()" class="nav-link active">// INDEX_GLOBAL</div>
+            <div id="nav-fav" onclick="renderPinned()" class="nav-link">// FAVORIS_SYSTEME</div>
         </nav>
-
         <div id="statusBar">
-            <div class="status-item"><span style="opacity:0.4">Node_Agence</span><span class="status-value" style="color: var(--accent);">MOUGINS_06_FR</span></div>
-            <div class="status-item"><span style="opacity:0.4">Status</span><span class="status-value"><div class="dot online"></div>SYSTEM_STABLE</span></div>
-            <div class="status-item"><span style="opacity:0.4">Timestamp</span><span class="status-value" id="liveTime">00:00:00</span></div>
+            <div style="opacity:0.5; margin-bottom:5px;">SECURE_CONNECTION: OK</div>
+            <div style="color:var(--accent); font-weight:700;">LIVE_TIME: <span id="liveTime">00:00:00</span></div>
         </div>
     </aside>
 
     <main class="content">
-        <div id="viewTitle" style="margin-bottom: 40px; opacity: 0.5; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">Root / Index</div>
+        <div id="viewTitle" style="margin-bottom: 30px; opacity: 0.4; font-family:'JetBrains Mono'; font-size:0.7rem; letter-spacing:3px;">SYSTEM / ROOT / INDEX</div>
         <div id="app" class="blueprint-grid"></div>
     </main>
 </div>
 
-<div id="toast">ACTION_SUCCESSFUL</div>
+<div id="toast">SYSTEM_UPDATE_SUCCESS</div>
 
 <script>
     const currentYear = new Date().getFullYear();
     const db = {
-        "Sanitaire": { color: "c-sanitaire", brands: { "Grohe": ["2026", "2025"], "Hansgrohe": ["2026"], "Geberit": ["2024"] }},
+        "Sanitaire": { color: "c-sanitaire", brands: { "Grohe": ["2026", "2025"], "Hansgrohe": ["2026"], "Geberit": ["2024"], "Villeroy & Boch": ["2026"] }},
         "Chauffage": { color: "c-chauffage", brands: { "Viessmann": ["2026"], "De Dietrich": ["2025"], "Atlantic": ["2026"] }},
-        "Plomberie": { color: "c-plomberie", brands: { "Nicoll": ["2025"], "Viega": ["2026"] }}
+        "Plomberie": { color: "c-plomberie", brands: { "Nicoll": ["2025"], "Viega": ["2026"], "Watts": ["2024"] }}
     };
 
     let pinnedBrands = JSON.parse(localStorage.getItem('richardson_pinned')) || [];
@@ -207,92 +196,117 @@
     function renderDomaines() {
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('nav-all').classList.add('active');
-        viewTitle.innerText = "Root / Main_Index";
+        viewTitle.innerText = "SYSTEM / ROOT / INDEX";
         app.innerHTML = "";
         Object.keys(db).forEach((dom, i) => {
             const card = document.createElement("div");
             card.className = "b-card";
             card.style.animationDelay = `${i * 0.1}s`;
-            card.innerHTML = `<div class="domain-color ${db[dom].color}"></div><h3>${dom}</h3>`;
+            card.innerHTML = `<div class="domain-color ${db[dom].color}"></div><h3>${dom}</h3><div style="margin-top:auto; font-size:0.6rem; opacity:0.4;">ENTRÉE_INDEX_${i+1}</div>`;
             card.onclick = () => renderBrands(dom);
             app.appendChild(card);
         });
     }
 
     function renderBrands(dom) {
-        viewTitle.innerText = `Root / ${dom.toUpperCase()}`;
-        app.innerHTML = `<div class="b-card" onclick="renderDomaines()" style="border-color:var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
+        viewTitle.innerText = `SYSTEM / ROOT / ${dom.toUpperCase()}`;
+        app.innerHTML = `<div class="b-card" onclick="renderDomaines()" style="border-color:var(--accent); color:var(--accent); animation-delay:0s;"><h3>⬅ RETOUR</h3></div>`;
         Object.keys(db[dom].brands).forEach((brand, i) => {
-            const isPinned = pinnedBrands.includes(brand);
             const card = document.createElement("div");
-            card.className = `b-card ${isPinned ? 'is-pinned' : ''}`;
-            card.style.animationDelay = `${i * 0.05}s`;
-            card.innerHTML = `<div class="pin-tag">FAVORIS</div><div class="domain-color ${db[dom].color}"></div><h3>${brand}</h3>`;
+            card.className = "b-card";
+            card.style.animationDelay = `${(i+1) * 0.07}s`;
+            card.innerHTML = `<div class="domain-color ${db[dom].color}"></div><h3>${brand}</h3><div style="margin-top:auto; font-size:0.6rem; opacity:0.4;">MARQUE_SÉLECTIONNÉE</div>`;
             card.onclick = () => renderFiles(dom, brand);
-            card.oncontextmenu = (e) => { e.preventDefault(); togglePin(brand, dom); };
+            // Clic droit pour épingler
+            card.oncontextmenu = (e) => {
+                e.preventDefault();
+                togglePin(brand);
+            };
             app.appendChild(card);
         });
     }
 
     function renderFiles(dom, brand) {
-        viewTitle.innerText = `Root / ${dom} / ${brand}`;
-        app.innerHTML = `<div class="b-card" onclick="renderBrands('${dom}')" style="border-color:var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
+        viewTitle.innerText = `SYSTEM / ROOT / ${dom.toUpperCase()} / ${brand.toUpperCase()}`;
+        app.innerHTML = `<div class="b-card" onclick="renderBrands('${dom}')" style="border-color:var(--accent); color:var(--accent); animation-delay:0s;"><h3>⬅ RETOUR</h3></div>`;
         db[dom].brands[brand].forEach((year, i) => {
             const yearInt = parseInt(year);
             let status = "OBSOLETE", sClass = "obsolete";
-            if (yearInt === currentYear) { status = "RECENT"; sClass = "recent"; }
-            else if (yearInt === currentYear - 1) { status = "VALIDATED"; sClass = "valid"; }
+            if (yearInt === currentYear) { status = "VALIDE_2026"; sClass = "recent"; }
+            else if (yearInt === currentYear - 1) { status = "CERTIFIÉ_2025"; sClass = "valid"; }
             
             const card = document.createElement("div");
             card.className = "b-card";
-            card.style.animationDelay = `${i * 0.1}s`;
+            card.style.animationDelay = `${(i+1) * 0.1}s`; // Correction ici : accolade fermée
             card.innerHTML = `
                 <div class="catalog-status ${sClass}">${status}</div>
+                <div style="font-family:'JetBrains Mono'; font-size:0.6rem; opacity:0.5; margin-bottom:5px;">ARCHIVE_PDF_SERIAL</div>
                 <h3>EDITION ${year}</h3>
-                <button class="btn-action">OUVRIR_L_ARCHIVE</button>
+                <button class="btn-action" onclick="event.stopPropagation(); showToast('Ouverture du catalogue ${brand} ${year}')">ACCÉDER_AU_FICHIER</button>
             `;
             app.appendChild(card);
         });
     }
 
+    function togglePin(brand) {
+        if(pinnedBrands.includes(brand)) {
+            pinnedBrands = pinnedBrands.filter(b => b !== brand);
+            showToast(brand + " retiré des favoris");
+        } else {
+            pinnedBrands.push(brand);
+            showToast(brand + " ajouté aux favoris");
+        }
+        localStorage.setItem('richardson_pinned', JSON.stringify(pinnedBrands));
+    }
+
     function renderPinned() {
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('nav-fav').classList.add('active');
-        viewTitle.innerText = "Root / Favorites";
+        viewTitle.innerText = "SYSTEM / ROOT / FAVORIS";
         app.innerHTML = "";
-        if (pinnedBrands.length === 0) {
-            app.innerHTML = `<div style="padding:40px; opacity:0.4;">AUCUNE DONNÉE ÉPINGLÉE</div>`;
+        
+        if(pinnedBrands.length === 0) {
+            app.innerHTML = `<div style="padding:40px; opacity:0.4; font-family:'JetBrains Mono';">AUCUN FAVORIS ENREGISTRÉ</div>`;
             return;
         }
-        pinnedBrands.forEach(brand => {
-            let foundDom = "";
-            Object.keys(db).forEach(dom => { if(db[dom].brands[brand]) foundDom = dom; });
+
+        pinnedBrands.forEach((brand, i) => {
+            let foundDom = "Sanitaire";
+            Object.keys(db).forEach(d => { if(db[d].brands[brand]) foundDom = d; });
+            
             const card = document.createElement("div");
-            card.className = "b-card is-pinned";
-            card.innerHTML = `<div class="pin-tag">FAVORIS</div><div class="domain-color ${db[foundDom].color}"></div><h3>${brand}</h3>`;
+            card.className = "b-card";
+            card.style.animationDelay = `${i * 0.1}s`;
+            card.innerHTML = `<div class="domain-color ${db[foundDom].color}"></div><h3>${brand}</h3><div style="margin-top:auto; font-size:0.6rem; opacity:0.4;">${foundDom.toUpperCase()}</div>`;
             card.onclick = () => renderFiles(foundDom, brand);
-            card.oncontextmenu = (e) => { e.preventDefault(); togglePin(brand); };
             app.appendChild(card);
         });
     }
 
-    function togglePin(brand, currentDom) {
-        if(pinnedBrands.includes(brand)) pinnedBrands = pinnedBrands.filter(b => b !== brand);
-        else pinnedBrands.push(brand);
-        localStorage.setItem('richardson_pinned', JSON.stringify(pinnedBrands));
-        showToast(brand + " mis à jour");
-        if(currentDom) renderBrands(currentDom); else renderPinned();
+    function handleSearch() {
+        const query = document.getElementById("globalSearch").value.toLowerCase();
+        if(query.length < 2) return;
+        
+        // Recherche simplifiée dans les marques
+        let resultsFound = false;
+        Object.keys(db).forEach(dom => {
+            Object.keys(db[dom].brands).forEach(brand => {
+                if(brand.toLowerCase().includes(query)) {
+                    renderFiles(dom, brand);
+                    resultsFound = true;
+                }
+            });
+        });
     }
 
     function toggleTheme() {
         const body = document.body;
-        const currentTheme = body.getAttribute('data-theme');
-        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        body.setAttribute('data-theme', nextTheme);
-        document.getElementById('themeBtn').innerText = nextTheme === 'dark' ? "Light_Mode" : "Dark_Mode";
+        const current = body.getAttribute('data-theme');
+        const target = current === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', target);
+        document.getElementById('themeBtn').innerText = target === 'dark' ? "Light_Mode" : "Dark_Mode";
+        showToast("Mode " + target + " activé");
     }
-
-    function exportInventory() { showToast("Génération du rapport..."); }
 
     setInterval(() => {
         document.getElementById("liveTime").innerText = new Date().toTimeString().split(' ')[0];
