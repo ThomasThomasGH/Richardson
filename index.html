@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDSON | B.P.O. (Blueprint Operational Tool) v4.0</title>
+    <title>RICHARDSON | B.P.O. v4.1</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -22,7 +22,7 @@
         body { 
             background-color: var(--bg);
             background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-            background-size: 40px 40px; font-family: 'Inter', sans-serif; margin: 0; color: var(--text); min-height: 100vh; overflow-x: hidden;
+            background-size: 40px 40px; font-family: 'Inter', sans-serif; margin: 0; color: var(--text); min-height: 100vh;
         }
 
         /* --- HEADER --- */
@@ -34,7 +34,6 @@
         .logo { font-weight: 900; font-size: 1.4rem; letter-spacing: 4px; text-decoration: none; color: var(--primary); }
         .search-container { flex-grow: 1; margin: 0 60px; }
         #globalSearch { width: 100%; background: transparent; border: 1px solid var(--border); padding: 12px 20px; font-family: 'JetBrains Mono', monospace; color: var(--primary); font-size: 0.8rem; outline: none; }
-        #globalSearch:focus { border-color: var(--accent); box-shadow: 0 0 15px rgba(227, 6, 19, 0.1); }
 
         .header-actions { display: flex; gap: 10px; }
         .action-btn { 
@@ -51,7 +50,7 @@
             display: flex; flex-direction: column; position: sticky; top: 80px; height: calc(100vh - 80px);
         }
 
-        .nav-link { text-decoration: none; color: var(--primary); font-size: 0.8rem; font-weight: 700; display: block; margin-bottom: 25px; opacity: 0.6; }
+        .nav-link { text-decoration: none; color: var(--primary); font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 25px; opacity: 0.5; cursor: pointer; text-transform: uppercase;}
         .nav-link:hover, .nav-link.active { opacity: 1; color: var(--accent); }
 
         /* --- STATUS HUB (BAS GAUCHE) --- */
@@ -62,40 +61,30 @@
         .dot.online { background: var(--online-green); animation: pulse 2s infinite; }
 
         /* --- CONTENT --- */
-        .content { padding: 60px; position: relative; }
+        .content { padding: 60px; }
         .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--primary); }
         
         .b-card { 
-            background: var(--surface); padding: 50px 40px; cursor: pointer; display: flex; flex-direction: column; position: relative; overflow: hidden;
+            background: var(--surface); padding: 50px 40px; cursor: pointer; display: flex; flex-direction: column; position: relative;
         }
         .b-card:hover { background: var(--primary); color: var(--surface); transform: scale(1.01); z-index: 2; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
         .b-card h3 { font-size: 1.8rem; margin: 0; font-weight: 300; text-transform: uppercase; letter-spacing: -1px; }
         
-        /* Pin Style */
-        .pin-icon { position: absolute; top: 20px; right: 20px; font-size: 0.7rem; opacity: 0.3; }
-        .b-card.is-pinned .pin-icon { opacity: 1; color: var(--accent); }
-
-        /* --- NOTIFICATION TOAST --- */
-        #toast {
-            position: fixed; bottom: 30px; right: 30px; background: var(--primary); color: var(--surface);
-            padding: 15px 25px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
-            transform: translateY(150%); transition: 0.4s; z-index: 3000; border: 1px solid var(--accent);
-        }
-        #toast.show { transform: translateY(0); }
-
-        /* --- RÈGLE D'ARCHITECTE (Bas de page) --- */
-        .drafting-scale {
-            position: fixed; bottom: 0; right: 0; left: 320px; height: 30px;
-            background: var(--surface); border-top: 1px solid var(--border);
-            display: flex; align-items: flex-end; padding: 0 20px; gap: 10px; opacity: 0.5;
-        }
-        .scale-mark { width: 1px; background: var(--primary); }
+        .pin-tag { position: absolute; top: 20px; right: 20px; font-size: 0.55rem; font-family: 'JetBrains Mono'; color: var(--accent); border: 1px solid var(--accent); padding: 2px 5px; font-weight: 700; display: none; }
+        .b-card.is-pinned .pin-tag { display: block; }
 
         .btn-action { 
             border: 1px solid var(--primary); background: transparent; color: inherit; padding: 15px; 
             font-weight: 700; text-transform: uppercase; font-size: 0.65rem; cursor: pointer; margin-top: 20px;
         }
         .b-card:hover .btn-action { border-color: var(--surface); }
+
+        #toast {
+            position: fixed; bottom: 30px; right: 30px; background: var(--primary); color: var(--surface);
+            padding: 15px 25px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+            transform: translateY(150%); transition: 0.4s; z-index: 3000; border: 1px solid var(--accent);
+        }
+        #toast.show { transform: translateY(0); }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
@@ -105,65 +94,47 @@
 <header>
     <a href="#" class="logo">RICHARDSON_B.P.O.</a>
     <div class="search-container">
-        <input type="text" id="globalSearch" placeholder="RECHERCHE_INDEX_TECHNIQUE // TAPEZ UNE MARQUE OU UN UNIVERS...">
+        <input type="text" id="globalSearch" placeholder="RECHERCHE_INDEX // FILTRER MARQUE OU ANNEE...">
     </div>
     <div class="header-actions">
         <button class="action-btn" onclick="exportInventory()">[ ↓ ] Rapport</button>
-        <button class="action-btn" onclick="toggleTheme()">Mode_Nuit</button>
+        <button class="action-btn" onclick="toggleTheme()">Dark_Mode</button>
         <button class="action-btn" onclick="toggleHelp()">Aide</button>
     </div>
 </header>
 
 <div class="main-wrapper">
     <aside>
-        <div style="font-size: 0.6rem; font-weight: 800; margin-bottom: 30px; opacity: 0.4; letter-spacing: 2px;">NAVIGATION_STRUCTURE</div>
+        <div style="font-size: 0.6rem; font-weight: 800; margin-bottom: 30px; opacity: 0.4; letter-spacing: 2px;">SYSTEM_NAV</div>
         <nav>
-            <a href="#" onclick="renderDomaines()" class="nav-link active">// TOUS_LES_DOCUMENTS</a>
-            <a href="#" onclick="renderPinned()" class="nav-link">// MARQUES_FAVORITES</a>
+            <div id="nav-all" onclick="renderDomaines()" class="nav-link active">// TOUS_LES_DOCUMENTS</div>
+            <div id="nav-fav" onclick="renderPinned()" class="nav-link">// MARQUES_FAVORITES</div>
         </nav>
 
         <div id="statusBar">
             <div class="status-item">
-                <span style="opacity:0.5">Agence_Reference</span>
-                <span class="status-value" style="color: var(--accent);">MOUGINS_06_PROVENCE</span>
+                <span style="opacity:0.5">Agence_Ref</span>
+                <span class="status-value" style="color: var(--accent);">MOUGINS_06_FR</span>
             </div>
             <div class="status-item">
-                <span style="opacity:0.5">System_Link</span>
-                <span class="status-value">
-                    <div id="networkDot" class="dot online"></div>
-                    <span id="networkText">STABLE_CONNECTION</span>
-                </span>
+                <span style="opacity:0.5">Status</span>
+                <span class="status-value"><div class="dot online"></div><span id="networkText">STABLE</span></span>
             </div>
             <div class="status-item">
-                <span style="opacity:0.5">Internal_Clock</span>
-                <span class="status-value" id="liveDate">02/03/2026</span>
-                <span class="status-value" id="liveTime" style="opacity: 0.5;">14:45:00</span>
+                <span style="opacity:0.5">Timestamp</span>
+                <span class="status-value" id="liveDate">--/--/--</span>
+                <span class="status-value" id="liveTime" style="opacity: 0.5;">00:00:00</span>
             </div>
         </div>
     </aside>
     
     <main class="content">
-        <div id="viewTitle" style="margin-bottom: 40px; opacity: 0.5; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">Root / Index_General</div>
+        <div id="viewTitle" style="margin-bottom: 40px; opacity: 0.5; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 700;">Root / Index</div>
         <div id="app" class="blueprint-grid"></div>
-        
-        <div class="drafting-scale" id="ruler"></div>
     </main>
 </div>
 
 <div id="toast">ACTION_SUCCESSFUL</div>
-
-<div id="helpModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:4000; align-items:center; justify-content:center;" onclick="toggleHelp()">
-    <div style="background:var(--surface); padding:60px; max-width:500px; border:1px solid var(--accent); color:var(--primary);" onclick="event.stopPropagation()">
-        <h2 style="font-weight:300; margin-top:0;">MANUEL_LOGICIEL</h2>
-        <p style="font-family:'JetBrains Mono'; font-size:0.75rem; line-height:1.6;">
-            1. CLIC LONG : Permet d'épingler/désépingler une marque dans vos favoris.<br><br>
-            2. RECHERCHE : Filtre en temps réel les marques et les années.<br><br>
-            3. COULEURS : Barre Verte = Validé. Barre Rouge = Obsolète.<br><br>
-            4. RAPPORT : Génère un état des lieux de l'archivage de Mougins.
-        </p>
-        <button class="btn-action" style="width:100%" onclick="toggleHelp()">COMPRIS</button>
-    </div>
-</div>
 
 <script>
     const currentYear = 2026;
@@ -175,43 +146,76 @@
 
     let pinnedBrands = JSON.parse(localStorage.getItem('richardson_pinned')) || [];
     const app = document.getElementById("app");
+    const viewTitle = document.getElementById("viewTitle");
 
-    // --- MOTEUR DE RENDU ---
+    // --- NAVIGATION LOGIQUE ---
+    function setActiveLink(id) {
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
     function renderDomaines() {
-        updateRuler();
-        document.getElementById("viewTitle").innerText = "Root / Selection_Univers";
+        setActiveLink('nav-all');
+        viewTitle.innerText = "Root / Selection_Univers";
         app.innerHTML = "";
         Object.keys(db).forEach((dom, i) => {
             const card = document.createElement("div");
             card.className = "b-card";
-            card.innerHTML = `<div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">UNIT_CODE_00${i+1}</div><h3>${dom}</h3>`;
+            card.innerHTML = `<div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">SEC_ID_00${i+1}</div><h3>${dom}</h3>`;
             card.onclick = () => renderBrands(dom);
             app.appendChild(card);
         });
     }
 
     function renderBrands(dom) {
-        document.getElementById("viewTitle").innerText = `Root / ${dom}`;
+        viewTitle.innerText = `Root / ${dom}`;
         app.innerHTML = `<div class="b-card" onclick="renderDomaines()" style="border:1px solid var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
         Object.keys(db[dom]).forEach(brand => {
             const isPinned = pinnedBrands.includes(brand);
             const card = document.createElement("div");
             card.className = `b-card ${isPinned ? 'is-pinned' : ''}`;
             card.innerHTML = `
-                <div class="pin-icon">⚓ FAVORITE</div>
-                <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">BRAND_ID_${brand.toUpperCase()}</div>
+                <div class="pin-tag">PINNED</div>
+                <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">MQR_${brand.toUpperCase()}</div>
                 <h3>${brand}</h3>
             `;
-            // Clic court = Ouvrir, Clic long = Pin
             card.onclick = () => renderFiles(dom, brand);
             card.oncontextmenu = (e) => { e.preventDefault(); togglePin(brand); };
             app.appendChild(card);
         });
-        showToast("Navigation : " + dom);
+    }
+
+    // NOUVEAU : Fonction de rendu des Favoris
+    function renderPinned() {
+        setActiveLink('nav-fav');
+        viewTitle.innerText = "Root / Marques_Favorites";
+        app.innerHTML = "";
+        
+        if (pinnedBrands.length === 0) {
+            app.innerHTML = `<div style="padding:40px; font-family:'JetBrains Mono'; opacity:0.5;">[ AUCUNE MARQUE ÉPINGLÉE ] <br> Faites un clic-droit sur une marque pour l'ajouter ici.</div>`;
+            return;
+        }
+
+        pinnedBrands.forEach(brand => {
+            // Trouver le domaine pour permettre l'ouverture des fichiers
+            let foundDom = "";
+            Object.keys(db).forEach(dom => { if(db[dom][brand]) foundDom = dom; });
+
+            const card = document.createElement("div");
+            card.className = "b-card is-pinned";
+            card.innerHTML = `
+                <div class="pin-tag">PINNED</div>
+                <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">FAV_DOC</div>
+                <h3>${brand}</h3>
+            `;
+            card.onclick = () => renderFiles(foundDom, brand);
+            card.oncontextmenu = (e) => { e.preventDefault(); togglePin(brand); };
+            app.appendChild(card);
+        });
     }
 
     function renderFiles(dom, brand) {
-        document.getElementById("viewTitle").innerText = `Root / ${dom} / ${brand}`;
+        viewTitle.innerText = `Root / ${dom} / ${brand}`;
         app.innerHTML = `<div class="b-card" onclick="renderBrands('${dom}')" style="border:1px solid var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
         db[dom][brand].forEach(year => {
             const isOld = parseInt(year) < currentYear;
@@ -219,21 +223,31 @@
             card.className = "b-card";
             card.innerHTML = `
                 <div style="height: 2px; background: ${isOld ? 'var(--offline-red)' : 'var(--online-green)'}; margin-bottom: 25px;"></div>
-                <div style="font-family:'JetBrains Mono'; font-size:0.6rem; font-weight:700; color:${isOld ? 'var(--offline-red)' : 'var(--online-green)'}">${isOld ? 'EXPIRED_DOC' : 'VALID_DOC'}</div>
+                <div style="font-family:'JetBrains Mono'; font-size:0.6rem; color:${isOld ? 'var(--offline-red)' : 'var(--online-green)'}">${isOld ? 'OBSOLETE' : 'VALIDATED'}</div>
                 <h3>EDITION ${year}</h3>
-                <button class="btn-action" onclick="showToast('Chargement PDF ${brand}...')">ACCÉDER_AU_FICHIER</button>
+                <button class="btn-action" onclick="showToast('Chargement PDF...')">OUVRIR_L_ARCHIVE</button>
             `;
             app.appendChild(card);
         });
     }
 
-    // --- FONCTIONNALITÉS ULTIMES ---
     function togglePin(brand) {
-        if(pinnedBrands.includes(brand)) pinnedBrands = pinnedBrands.filter(b => b !== brand);
-        else pinnedBrands.push(brand);
+        if(pinnedBrands.includes(brand)) {
+            pinnedBrands = pinnedBrands.filter(b => b !== brand);
+            showToast(brand + " retiré des favoris");
+        } else {
+            pinnedBrands.push(brand);
+            showToast(brand + " épinglé");
+        }
         localStorage.setItem('richardson_pinned', JSON.stringify(pinnedBrands));
-        showToast(brand + " : État favori modifié");
-        location.reload(); 
+        
+        // Rafraîchir la vue actuelle
+        if(document.getElementById('nav-fav').classList.contains('active')) renderPinned();
+        else {
+            // Si on est dans un domaine, on rafraîchit les marques
+            const currentDom = viewTitle.innerText.split(' / ')[1];
+            if(db[currentDom]) renderBrands(currentDom);
+        }
     }
 
     function showToast(msg) {
@@ -243,41 +257,24 @@
         setTimeout(() => t.classList.remove("show"), 3000);
     }
 
+    function toggleTheme() {
+        const body = document.body;
+        const newTheme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+        body.setAttribute('data-theme', newTheme);
+        showToast("Thème : " + newTheme.toUpperCase());
+    }
+
     function exportInventory() {
-        let txt = "RAPPORT D'INVENTAIRE ARCHIVE - MOUGINS - " + new Date().toLocaleDateString() + "\n\n";
+        let txt = "RAPPORT_MOUGINS_" + new Date().toLocaleDateString() + "\n\n";
         Object.keys(db).forEach(d => {
             txt += `[${d}]\n`;
-            Object.keys(db[d]).forEach(b => {
-                txt += `  - ${b} : Éditions ${db[d][b].join(', ')}\n`;
-            });
+            Object.keys(db[d]).forEach(b => txt += ` - ${b} (${db[d][b].join(', ')})\n`);
         });
         const blob = new Blob([txt], {type: "text/plain"});
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "Rapport_Richardson_Mougins.txt";
+        a.download = "Rapport_Mougins.txt";
         a.click();
-        showToast("Rapport généré avec succès");
-    }
-
-    function updateRuler() {
-        const ruler = document.getElementById("ruler");
-        ruler.innerHTML = "";
-        for(let i=0; i<50; i++) {
-            const mark = document.createElement("div");
-            mark.className = "scale-mark";
-            mark.style.height = (i % 5 === 0) ? "20px" : "10px";
-            ruler.appendChild(mark);
-        }
-    }
-
-    function toggleTheme() {
-        document.body.setAttribute('data-theme', document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
-        showToast("Changement de mode visuel");
-    }
-
-    function toggleHelp() {
-        const m = document.getElementById("helpModal");
-        m.style.display = (m.style.display === "none") ? "flex" : "none";
     }
 
     function updateTime() {
@@ -290,23 +287,6 @@
     updateTime();
     renderDomaines();
 
-    // Recherche
-    document.getElementById("globalSearch").oninput = (e) => {
-        const val = e.target.value.toLowerCase();
-        if(val.length < 2) return;
-        app.innerHTML = "";
-        Object.keys(db).forEach(dom => {
-            Object.keys(db[dom]).forEach(brand => {
-                if(brand.toLowerCase().includes(val)) {
-                    const card = document.createElement("div");
-                    card.className = "b-card";
-                    card.innerHTML = `<div style="font-size: 0.55rem; opacity: 0.4; margin-bottom:15px;">SEARCH_MATCH</div><h3>${brand}</h3>`;
-                    card.onclick = () => renderFiles(dom, brand);
-                    app.appendChild(card);
-                }
-            });
-        });
-    };
 </script>
 </body>
 </html>
