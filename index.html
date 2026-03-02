@@ -3,13 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Richardson - Archivage Digital</title>
+    <title>Richardson - Archivage Digital (Confort Visuel)</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --richardson-blue: #004b93;
+            /* NOUVELLES COULEURS */
+            --richardson-blue-night: #001a33; /* Bleu Nuit pour le logo */
             --richardson-red: #e30613;
-            --bg-light: #f4f7fa;
+            --soft-bg: #f9f9f7; /* Fond du site doux, moins agressif */
+            --card-white: #ffffff; /* Les cartes restent blanches pour le contraste */
+            
+            --richardson-blue-action: #004b93; /* Bleu pour les boutons et accents */
             --text-dark: #1a202c;
             --success: #27ae60;
             --warning: #f39c12;
@@ -19,7 +23,7 @@
         * { box-sizing: border-box; font-family: 'Poppins', sans-serif; }
         
         body { 
-            background-color: var(--bg-light); 
+            background-color: var(--soft-bg); /* Appliquer le fond doux */
             margin: 0; 
             color: var(--text-dark);
             line-height: 1.6;
@@ -32,14 +36,14 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            border-bottom: 4px solid var(--richardson-blue);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-bottom: 4px solid var(--richardson-blue-action);
         }
 
         .logo-placeholder {
             font-weight: 800;
             font-size: 1.5rem;
-            color: var(--richardson-blue);
+            color: var(--richardson-blue-night); /* Appliquer le Bleu Nuit */
             text-transform: uppercase;
             letter-spacing: -1px;
         }
@@ -52,17 +56,10 @@
             padding: 0 1.5rem;
         }
 
-        /* Breadcrumbs / Fil d'Ariane */
-        .breadcrumb {
-            margin-bottom: 1.5rem;
-            font-size: 0.9rem;
-            color: #718096;
-        }
-
         h2 { 
             font-weight: 700; 
             margin-bottom: 2rem; 
-            color: var(--richardson-blue);
+            color: var(--richardson-blue-action);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -77,35 +74,33 @@
 
         /* Card Design */
         .card {
-            background: white;
+            background: var(--card-white); /* Fond blanc pur pour la carte */
             border-radius: 12px;
             padding: 2rem;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03); /* Ombre plus douce */
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            border: 1px solid #edf2f7;
+            border: 1px solid #f0f0f0; /* Bordure très claire */
             position: relative;
             overflow: hidden;
         }
 
         .card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-            border-color: var(--richardson-blue);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.08);
+            border-color: var(--richardson-blue-action);
         }
 
         .card::before {
             content: '';
             position: absolute;
             top: 0; left: 0; width: 100%; height: 5px;
-            background: var(--richardson-blue);
+            background: var(--richardson-blue-action);
             opacity: 0; transition: 0.3s;
         }
 
         .card:hover::before { opacity: 1; }
-
-        .card i { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
 
         /* Catalog Status Styles */
         .catalog-card {
@@ -145,8 +140,8 @@
         /* Buttons */
         .btn-back {
             background: none;
-            border: 1px solid var(--richardson-blue);
-            color: var(--richardson-blue);
+            border: 1px solid var(--richardson-blue-action);
+            color: var(--richardson-blue-action);
             padding: 0.5rem 1rem;
             border-radius: 6px;
             cursor: pointer;
@@ -156,14 +151,14 @@
         }
 
         .btn-back:hover {
-            background: var(--richardson-blue);
+            background: var(--richardson-blue-action);
             color: white;
         }
 
         .btn-view {
             margin-top: 1rem;
             display: inline-block;
-            background: var(--richardson-blue);
+            background: var(--richardson-blue-action);
             color: white;
             padding: 8px 20px;
             border-radius: 6px;
@@ -178,7 +173,7 @@
 <header>
     <div class="logo-placeholder">RICHARD<span>SON</span></div>
     <div style="font-size: 0.8rem; text-align: right; color: #718096;">
-        Espace Commercial v2.0<br>
+        Espace Commercial v2.1<br>
         <strong>Base de données Catalogues</strong>
     </div>
 </header>
@@ -190,111 +185,7 @@
     /* ============================================================
        DONNÉES DE TEST (Simulées pour preuve de concept)
        ============================================================ */
-    const currentYear = new Date().getFullYear(); // 2026 pour ton test
+    // Note : Nous sommes en Mars 2026 pour ce test.
+    const currentYear = new Date().getFullYear(); 
     
-    const catalogues = {
-        "Sanitaire 🚿": {
-            "Grohe": [currentYear.toString(), (currentYear-1).toString()],
-            "Hansgrohe": [currentYear.toString()],
-            "Geberit": [(currentYear-2).toString()]
-        },
-        "Chauffage 🔥": {
-            "Viessmann": [currentYear.toString()],
-            "De Dietrich": [(currentYear-1).toString()],
-            "Saunier Duval": [currentYear.toString()]
-        },
-        "Plomberie 🔧": {
-            "Nicoll": [(currentYear-1).toString()],
-            "Viega": [currentYear.toString()]
-        }
-    };
-
-    let state = { domaine: null, marque: null };
-
-    /* ============================================================
-       LOGIQUE DE COULEUR (Basée sur l'année et le mois actuel)
-       ============================================================ */
-    function getStatusInfo(year) {
-        const now = new Date();
-        const y = parseInt(year);
-        const m = now.getMonth(); // 0-11
-
-        // ROUGE : Année précédente ou plus vieux
-        if (y < currentYear) {
-            return { class: 'status-red', badge: 'badge-red', label: 'Obsolète', warning: true };
-        }
-        
-        // ORANGE : On est en deuxième moitié de l'année en cours (Juillet+)
-        if (y === currentYear && m >= 6) {
-            return { class: 'status-orange', badge: 'badge-orange', label: 'À vérifier', warning: false };
-        }
-
-        // VERT : Année en cours, première moitié
-        return { class: 'status-green', badge: 'badge-green', label: 'À jour', warning: false };
-    }
-
-    /* ============================================================
-       MOTEUR DE RENDU
-       ============================================================ */
-    const app = document.getElementById("app");
-
-    function renderDomaines() {
-        app.innerHTML = `<h2>Sélectionnez un univers métier</h2>`;
-        const grid = document.createElement("div");
-        grid.className = "grid";
-
-        Object.keys(catalogues).forEach(dom => {
-            const card = document.createElement("div");
-            card.className = "card";
-            card.innerHTML = `<div>${dom}</div>`;
-            card.onclick = () => { state.domaine = dom; renderMarques(); };
-            grid.appendChild(card);
-        });
-        app.appendChild(grid);
-    }
-
-    function renderMarques() {
-        app.innerHTML = `<button class="btn-back" onclick="renderDomaines()">⬅ Retour</button>`;
-        app.innerHTML += `<h2>Marques : ${state.domaine}</h2>`;
-        const grid = document.createElement("div");
-        grid.className = "grid";
-
-        Object.keys(catalogues[state.domaine]).forEach(m => {
-            const card = document.createElement("div");
-            card.className = "card";
-            card.innerHTML = `<div>${m}</div>`;
-            card.onclick = () => { state.marque = m; renderAnnees(); };
-            grid.appendChild(card);
-        });
-        app.appendChild(grid);
-    }
-
-    function renderAnnees() {
-        app.innerHTML = `<button class="btn-back" onclick="renderMarques()">⬅ Retour</button>`;
-        app.innerHTML += `<h2>Éditions disponibles : ${state.marque}</h2>`;
-        const grid = document.createElement("div");
-        grid.className = "grid";
-
-        catalogues[state.domaine][state.marque].forEach(yr => {
-            const status = getStatusInfo(yr);
-            const card = document.createElement("div");
-            card.className = `card catalog-card ${status.class}`;
-            
-            card.innerHTML = `
-                <span class="badge ${status.badge}">${status.label}</span>
-                <div style="font-size:1.2rem; font-weight:700;">Catalogue Général ${yr}</div>
-                <div style="font-size:0.8rem; color:#718096; margin-top:5px;">Format: PDF Digital</div>
-                ${status.warning ? `<div class="warning-box">⚠ Attention : Validité à confirmer avec le fournisseur avant chiffrage !</div>` : ''}
-                <a href="#" class="btn-view" onclick="alert('Ouverture du PDF ${yr}...')">Consulter le document</a>
-            `;
-            grid.appendChild(card);
-        });
-        app.appendChild(grid);
-    }
-
-    // Initialisation
-    renderDomaines();
-</script>
-
-</body>
-</html>
+    const
