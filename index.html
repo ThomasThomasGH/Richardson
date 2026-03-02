@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="fr" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDSON | B.P.O. v6.3 FINAL</title>
+    <title>RICHARDSON | B.P.O. v6.4 FINAL_LIGHT_FIRST</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -32,7 +32,7 @@
 
         /* --- ANIMATIONS --- */
         @keyframes scanLine { 0% { top: -10%; opacity: 0; } 40% { opacity: 1; } 100% { top: 110%; opacity: 0; } }
-        @keyframes pulseNeon { 0%, 100% { filter: brightness(1) blur(0px); } 50% { filter: brightness(1.5) blur(1px); } }
+        @keyframes pulseNeon { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.5); } }
         @keyframes entrance { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- HEADER --- */
@@ -68,7 +68,6 @@
         .status-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px; text-transform: uppercase; font-size: 0.6rem; }
         .status-value { font-weight: 700; display: flex; align-items: center; gap: 10px; font-size: 0.7rem; }
         
-        /* NEON DOT */
         .dot { 
             width: 10px; height: 10px; background: var(--online-green); 
             box-shadow: 0 0 var(--glow-power) var(--online-green); 
@@ -116,16 +115,16 @@
             flex-grow: 1; padding: 25px; overflow-y: auto; font-family: 'JetBrains Mono'; 
             font-size: 0.75rem; background: var(--bg); color: var(--text);
         }
-        .ai-msg { margin-bottom: 20px; padding: 15px; border-left: 3px solid var(--accent); background: var(--surface); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .ai-msg { margin-bottom: 20px; padding: 15px; border-left: 3px solid var(--accent); background: var(--surface); }
         .ai-msg.user { border-left: 0; border-right: 3px solid var(--primary); text-align: right; opacity: 0.7; }
-        .ai-input-area { padding: 25px; border-top: 1px solid var(--border); }
+        .ai-input-area { padding: 25px; border-top: 1px solid var(--border); background: var(--surface); }
         .ai-input { 
             width: 100%; background: var(--bg); border: 2px solid var(--primary); 
             padding: 15px; font-family: 'JetBrains Mono'; font-size: 0.75rem; color: var(--text); outline: none;
         }
     </style>
 </head>
-<body data-theme="dark">
+<body data-theme="light">
 
 <header>
     <a href="#" class="logo" onclick="renderDomaines()">RICHARDSON_<span>B.P.O.</span></a>
@@ -135,7 +134,7 @@
     <div class="header-actions">
         <button class="action-btn" onclick="aiBot('Générer rapport PDF automatique')">Rapport</button>
         <button class="action-btn" onclick="aiBot('Besoin d\'aide sur l\'interface')">Aide</button>
-        <button class="action-btn" onclick="toggleTheme()" id="themeBtn">Light_Mode</button>
+        <button class="action-btn" onclick="toggleTheme()" id="themeBtn">Dark_Mode</button>
     </div>
 </header>
 
@@ -183,21 +182,17 @@
     const aiChat = document.getElementById("aiChat");
     const viewTitle = document.getElementById("viewTitle");
 
-    // AI ENGINE
     function handleAiChat() {
         const input = document.getElementById("aiInput");
         const val = input.value.trim();
         if(!val) return;
-
         aiChat.innerHTML += `<div class="ai-msg user">${val}</div>`;
         input.value = "";
         aiChat.scrollTop = aiChat.scrollHeight;
-
         setTimeout(() => {
-            let res = "Analyse des index... Aucun article trouvé. Voulez-vous scanner les catalogues archivés ?";
+            let res = "Analyse en cours... Aucun résultat exact trouvé.";
             if(val.toLowerCase().includes("plomberie")) res = "Division PLOMBERIE détectée. Marques : Nicoll, Viega, Watts disponibles.";
             if(val.toLowerCase().includes("grohe")) res = "Catalogue GROHE 2026 : 45 références de mitigeurs trouvées. Page 12.";
-            
             aiChat.innerHTML += `<div class="ai-msg bot">> AI_RESPONSE: ${res}</div>`;
             aiChat.scrollTop = aiChat.scrollHeight;
         }, 800);
@@ -205,14 +200,12 @@
 
     function aiBot(cmd) { document.getElementById("aiInput").value = cmd; handleAiChat(); }
 
-    // RENDER ENGINE
     function renderDomaines() {
         viewTitle.innerText = "SYSTEM / ROOT / INDEX";
         app.innerHTML = "";
         Object.keys(db).forEach((dom, i) => {
             const card = document.createElement("div");
             card.className = "b-card";
-            card.style.animationDelay = `${i * 0.1}s`;
             card.innerHTML = `<div class="domain-color ${db[dom].color}"></div><h3>${dom}</h3><div style="margin-top:auto; font-size:0.6rem; opacity:0.4;">SÉLECTION_DIVISION_0${i+1}</div>`;
             card.onclick = () => renderBrands(dom);
             app.appendChild(card);
@@ -238,27 +231,22 @@
             const isObsolete = parseInt(year) < currentYear - 1;
             const statusText = isObsolete ? "OBSOLETE" : "VALIDE_2026";
             const sClass = isObsolete ? "obsolete" : "valid";
-            
             const card = document.createElement("div");
             card.className = "b-card";
-            card.innerHTML = `
-                <div class="catalog-status ${sClass}">${statusText}</div>
-                <h3>EDITION ${year}</h3>
-                <button style="margin-top:20px; background:transparent; border:1px solid inherit; padding:12px; color:inherit; font-weight:700; cursor:pointer;">ACCÉDER_PDF</button>
-            `;
+            card.innerHTML = `<div class="catalog-status ${sClass}">${statusText}</div><h3>EDITION ${year}</h3><button style="margin-top:20px; background:transparent; border:1px solid inherit; padding:12px; color:inherit; font-weight:700; cursor:pointer;">ACCÉDER_PDF</button>`;
             app.appendChild(card);
         });
     }
 
     function toggleTheme() {
         const body = document.body;
-        const isDark = body.getAttribute('data-theme') === 'dark';
-        body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-        document.getElementById('themeBtn').innerText = isDark ? "Dark_Mode" : "Light_Mode";
+        const currentTheme = body.getAttribute('data-theme');
+        const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
+        body.setAttribute('data-theme', nextTheme);
+        document.getElementById('themeBtn').innerText = nextTheme === 'light' ? "Dark_Mode" : "Light_Mode";
     }
 
     setInterval(() => { document.getElementById("liveTime").innerText = new Date().toTimeString().split(' ')[0]; }, 1000);
-
     renderDomaines();
 </script>
 </body>
