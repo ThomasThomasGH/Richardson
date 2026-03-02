@@ -3,197 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Richardson - Gestionnaire de Catalogues</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <title>Richardson | Archive Technique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --rich-night: #001a33;
-            --rich-blue: #004b93;
             --rich-red: #e30613;
-            --soft-bg: #f0f4f8; /* Gris-bleu très doux */
-            --glass-white: rgba(255, 255, 255, 0.95);
-            --text-main: #2d3748;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+            --concrete-bg: #f2f2f2; /* Fond gris béton clair */
+            --line-gray: #d1d1d1;
+            --pure-white: #ffffff;
+            --success: #1a472a; /* Vert sombre architectural */
+            --warning: #855d13; /* Orange terre d'ombre */
+            --danger: #7a1a1a;  /* Rouge brique sombre */
         }
 
-        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        * { box-sizing: border-box; border-radius: 0 !important; transition: all 0.2s ease-in-out; }
         
         body { 
-            background-color: var(--soft-bg); 
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--concrete-bg); 
+            font-family: 'Inter', sans-serif;
             margin: 0; 
-            color: var(--text-main);
-            min-height: 100vh;
+            color: var(--rich-night);
+            letter-spacing: -0.02em;
         }
 
-        /* Barre de navigation élégante */
+        /* Header Linéaire */
         header {
-            background: var(--glass-white);
-            backdrop-filter: blur(10px);
-            padding: 1rem 10%;
+            background: var(--pure-white);
+            padding: 2rem 5%;
             display: flex;
-            align-items: center;
+            align-items: baseline;
             justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-            border-bottom: 1px solid rgba(0,75,147,0.1);
+            border-bottom: 2px solid var(--rich-night);
         }
 
         .logo {
-            font-weight: 800;
-            font-size: 1.6rem;
+            font-weight: 900;
+            font-size: 1.8rem;
             color: var(--rich-night);
-            letter-spacing: -1px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
             text-decoration: none;
         }
 
         .logo span { color: var(--rich-red); }
 
+        .header-meta {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 400;
+        }
+
         .container {
-            max-width: 1100px;
-            margin: 3rem auto;
+            max-width: 1200px;
+            margin: 4rem auto;
             padding: 0 2rem;
         }
 
         h2 { 
-            font-weight: 800; 
-            font-size: 1.8rem;
-            margin-bottom: 2rem; 
-            color: var(--rich-night);
-            letter-spacing: -0.5px;
+            font-weight: 300; 
+            font-size: 2.5rem;
+            margin-bottom: 3rem; 
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--line-gray);
+            padding-bottom: 1rem;
         }
 
-        /* Grille moderne */
+        /* Grille Structurelle */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1px; /* Créer un effet de grille par les bordures */
+            background-color: var(--line-gray);
+            border: 1px solid var(--line-gray);
         }
 
-        /* Cartes d'univers */
+        /* Cellules de la Grille */
         .card {
-            background: var(--glass-white);
-            border-radius: 20px;
-            padding: 2.5rem 2rem;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.8);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.02);
+            background: var(--pure-white);
+            padding: 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
             cursor: pointer;
             position: relative;
         }
 
         .card:hover {
-            transform: translateY(-10px) scale(1.02);
-            box-shadow: 0 20px 40px rgba(0,75,147,0.08);
-            border-color: var(--rich-blue);
-        }
-
-        .card-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            display: block;
+            background: var(--rich-night);
+            color: var(--pure-white);
         }
 
         .card-title {
             font-weight: 700;
-            font-size: 1.2rem;
-            color: var(--rich-night);
+            font-size: 1.4rem;
+            text-transform: uppercase;
         }
 
-        /* Cartes de catalogues (Niveau final) */
+        /* Catalogues (Niveau Final) */
         .catalog-card {
             text-align: left;
-            padding: 2rem;
-            border-left: 6px solid;
+            padding: 2.5rem;
+            border-top: 8px solid;
         }
 
-        .status-green { border-left-color: var(--success); }
-        .status-orange { border-left-color: var(--warning); }
-        .status-red { border-left-color: var(--danger); }
+        .status-green { border-top-color: var(--success); }
+        .status-orange { border-top-color: var(--warning); }
+        .status-red { border-top-color: var(--danger); }
 
         .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 6px 14px;
-            border-radius: 100px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            letter-spacing: 0.5px;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border: 1px solid currentColor;
+            margin-bottom: 1.5rem;
+            display: inline-block;
         }
-
-        .badge-green { background: #ecfdf5; color: var(--success); }
-        .badge-orange { background: #fffbeb; color: var(--warning); }
-        .badge-red { background: #fef2f2; color: var(--danger); }
 
         .warning-msg {
-            margin-top: 1.5rem;
-            font-size: 0.75rem;
-            padding: 12px;
-            background: #fff5f5;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            padding: 1rem;
+            background: #fdf2f2;
+            border: 1px solid var(--danger);
             color: var(--danger);
-            border-radius: 12px;
-            border: 1px dashed var(--danger);
-            font-weight: 600;
+            text-transform: uppercase;
+            font-weight: 700;
         }
 
-        /* Boutons sophistiqués */
+        /* Boutons Techniques */
         .btn-back {
-            background: white;
-            border: 1px solid rgba(0,0,0,0.1);
-            color: var(--rich-blue);
-            padding: 0.7rem 1.5rem;
-            border-radius: 12px;
+            background: var(--rich-night);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
             cursor: pointer;
             font-weight: 700;
+            font-size: 0.7rem;
+            text-transform: uppercase;
             margin-bottom: 2rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
 
         .btn-back:hover {
-            background: var(--rich-night);
-            color: white;
-            border-color: var(--rich-night);
+            background: var(--rich-red);
         }
 
         .btn-action {
-            display: block;
+            display: inline-block;
             width: 100%;
             text-align: center;
-            background: var(--rich-blue);
-            color: white;
-            padding: 12px;
-            border-radius: 12px;
+            border: 1px solid var(--rich-night);
+            color: var(--rich-night);
+            padding: 1rem;
             text-decoration: none;
             font-weight: 700;
-            margin-top: 1.5rem;
-            font-size: 0.9rem;
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .card:hover .btn-action {
+            border-color: var(--pure-white);
+            color: var(--pure-white);
         }
 
         .btn-action:hover {
-            background: var(--rich-night);
-            letter-spacing: 1px;
+            background: var(--pure-white);
+            color: var(--rich-night) !important;
         }
 
-        /* Animation de chargement */
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
     </style>
 </head>
 <body>
 
 <header>
     <a href="#" class="logo" onclick="location.reload()">RICHARD<span>SON</span></a>
-    <div style="font-size: 0.75rem; text-align: right; line-height: 1.4;">
-        <span style="color: var(--rich-blue); font-weight: 800;">PORTAIL ARCHIVAGE</span><br>
-        Mise à jour : Mars 2026
+    <div class="header-meta">
+        Index Technique // Édition 2026.03
     </div>
 </header>
 
@@ -204,17 +192,17 @@
     const currentYear = 2026;
     
     const catalogues = {
-        "Sanitaire 🚿": {
+        "Sanitaire": {
             "Grohe": ["2026", "2025"],
             "Hansgrohe": ["2026"],
             "Geberit": ["2024"]
         },
-        "Chauffage 🔥": {
+        "Chauffage": {
             "Viessmann": ["2026"],
             "De Dietrich": ["2025"],
             "Saunier Duval": ["2026"]
         },
-        "Plomberie 🔧": {
+        "Plomberie": {
             "Nicoll": ["2025"],
             "Viega": ["2026"]
         }
@@ -226,22 +214,22 @@
         const y = parseInt(year);
         const m = new Date().getMonth(); 
 
-        if (y < currentYear) return { class: 'status-red', badge: 'badge-red', label: 'ANCIENNE ÉDITION', warning: true };
-        if (m >= 6) return { class: 'status-orange', badge: 'badge-orange', label: 'VÉRIFICATION REQUISE', warning: false };
-        return { class: 'status-green', badge: 'badge-green', label: 'ÉDITION À JOUR', warning: false };
+        if (y < currentYear) return { class: 'status-red', label: 'INVALID_EXP', warning: true };
+        if (m >= 6) return { class: 'status-orange', label: 'CHECK_REQ', warning: false };
+        return { class: 'status-green', label: 'VALID_CONFIRMED', warning: false };
     }
 
     const app = document.getElementById("app");
 
     function renderDomaines() {
-        app.innerHTML = `<h2 class="fade-in">Sélectionnez un univers</h2>`;
+        app.innerHTML = `<h2>Univers Métiers</h2>`;
         const grid = document.createElement("div");
-        grid.className = "grid fade-in";
+        grid.className = "grid";
 
         Object.keys(catalogues).forEach(dom => {
             const card = document.createElement("div");
             card.className = "card";
-            card.innerHTML = `<span class="card-icon">${dom.split(' ')[1]}</span><span class="card-title">${dom.split(' ')[0]}</span>`;
+            card.innerHTML = `<span class="card-title">${dom}</span>`;
             card.onclick = () => { state.domaine = dom; renderMarques(); };
             grid.appendChild(card);
         });
@@ -249,9 +237,9 @@
     }
 
     function renderMarques() {
-        app.innerHTML = `<button class="btn-back fade-in" onclick="renderDomaines()">⬅ Retour</button><h2 class="fade-in">${state.domaine}</h2>`;
+        app.innerHTML = `<button class="btn-back" onclick="renderDomaines()">RETOUR</button><h2>${state.domaine}</h2>`;
         const grid = document.createElement("div");
-        grid.className = "grid fade-in";
+        grid.className = "grid";
 
         Object.keys(catalogues[state.domaine]).forEach(m => {
             const card = document.createElement("div");
@@ -264,9 +252,9 @@
     }
 
     function renderAnnees() {
-        app.innerHTML = `<button class="btn-back fade-in" onclick="renderMarques()">⬅ Retour</button><h2 class="fade-in">${state.marque}</h2>`;
+        app.innerHTML = `<button class="btn-back" onclick="renderMarques()">RETOUR</button><h2>${state.marque}</h2>`;
         const grid = document.createElement("div");
-        grid.className = "grid fade-in";
+        grid.className = "grid";
 
         catalogues[state.domaine][state.marque].forEach(yr => {
             const status = getStatus(yr);
@@ -274,11 +262,11 @@
             card.className = `card catalog-card ${status.class}`;
             
             card.innerHTML = `
-                <span class="badge ${status.badge}">${status.label}</span>
-                <div style="font-weight:800; font-size:1.3rem; color:var(--rich-night);">Catalogue ${yr}</div>
-                <p style="color:#718096; font-size:0.85rem; margin: 10px 0;">Document PDF haute définition pour consultation commerciale.</p>
-                ${status.warning ? `<div class="warning-msg">⚠ Ce document date de ${yr}. Vérifiez les tarifs en vigueur sur le logiciel interne.</div>` : ''}
-                <a href="#" class="btn-action" onclick="alert('Téléchargement du catalogue ${state.marque} ${yr} lancé...')">CONSULTER</a>
+                <span class="badge">${status.label}</span>
+                <div style="font-weight:700; font-size:1.8rem;">ED.${yr}</div>
+                <p style="text-transform: uppercase; font-size:0.65rem; margin-top:1rem; opacity:0.7;">Documentation Technique PDF</p>
+                ${status.warning ? `<div class="warning-msg">Attention: Documentation hors cycle. Vérification fournisseur impérative.</div>` : ''}
+                <a href="#" class="btn-action" onclick="alert('Accès au document ${state.marque} ${yr}')">Consulter l'archive</a>
             `;
             grid.appendChild(card);
         });
