@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDSON | TECHNICAL BLUEPRINT v3.0</title>
+    <title>RICHARDSON | TECHNICAL BLUEPRINT v3.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -14,9 +14,8 @@
             --text: #001a33;
             --border: #d1d1d1;
             --grid-color: rgba(0, 26, 51, 0.05);
-            --success: #1a472a;
-            --warning: #855d13;
-            --danger: #7a1a1a;
+            --online-green: #00ff88;
+            --offline-red: #ff4444;
         }
 
         [data-theme="dark"] {
@@ -28,7 +27,7 @@
             --grid-color: rgba(255, 255, 255, 0.03);
         }
 
-        * { box-sizing: border-box; transition: background 0.3s, color 0.3s, transform 0.2s; border-radius: 0 !important; }
+        * { box-sizing: border-box; transition: background 0.3s, color 0.3s; border-radius: 0 !important; }
         
         body { 
             background-color: var(--bg);
@@ -39,358 +38,240 @@
             font-family: 'Inter', sans-serif;
             margin: 0; 
             color: var(--text);
-            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* NAVIGATION BAR */
         header {
-            height: 80px;
-            background: var(--surface);
-            border-bottom: 2px solid var(--primary);
-            display: flex;
-            align-items: center;
-            padding: 0 40px;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            height: 80px; background: var(--surface); border-bottom: 2px solid var(--primary);
+            display: flex; align-items: center; padding: 0 40px; position: sticky; top: 0; z-index: 1000;
         }
 
-        .logo {
-            font-weight: 900;
-            font-size: 1.5rem;
-            letter-spacing: 4px;
-            text-decoration: none;
-            color: var(--primary);
-            flex-shrink: 0;
+        .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: 4px; text-decoration: none; color: var(--primary); }
+        .search-container { flex-grow: 1; margin-left: 60px; }
+        #globalSearch { width: 100%; background: transparent; border: 1px solid var(--border); padding: 12px 20px; font-family: 'JetBrains Mono', monospace; color: var(--primary); font-size: 0.8rem; }
+
+        .main-wrapper { 
+            display: grid; 
+            grid-template-columns: 300px 1fr; 
+            min-height: calc(100vh - 80px); 
         }
 
-        .search-container {
-            flex-grow: 1;
-            margin-left: 60px;
-            position: relative;
-        }
-
-        #globalSearch {
-            width: 100%;
-            background: transparent;
-            border: 1px solid var(--border);
-            padding: 12px 20px;
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--primary);
-            font-size: 0.9rem;
-        }
-
-        .controls {
-            display: flex;
-            gap: 20px;
-            margin-left: 40px;
-        }
-
-        .control-btn {
-            background: none;
-            border: 1px solid var(--border);
-            color: var(--primary);
-            padding: 8px 15px;
-            cursor: pointer;
-            font-size: 0.7rem;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-
-        /* LAYOUT */
-        .main-wrapper {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            min-height: calc(100vh - 80px);
-        }
-
-        aside {
-            border-right: 1px solid var(--border);
-            background: var(--surface);
+        /* --- COLONNE GAUCHE (ASIDE) --- */
+        aside { 
+            border-right: 1px solid var(--border); 
+            background: var(--surface); 
             padding: 40px;
+            display: flex;
+            flex-direction: column; /* Permet de pousser le contenu en bas */
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+        }
+
+        .nav-section-title {
+            font-size: 0.7rem; 
+            font-weight: 800; 
+            margin-bottom: 20px; 
+            opacity: 0.4;
+            letter-spacing: 1px;
         }
 
         .nav-link {
+            text-decoration: none; 
+            color: var(--primary); 
+            font-size: 0.85rem; 
+            font-weight: 700;
             display: block;
-            margin-bottom: 15px;
-            text-decoration: none;
-            color: var(--text);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            font-weight: 700;
-            opacity: 0.5;
+            margin-bottom: 10px;
         }
 
-        .nav-link.active { opacity: 1; border-left: 3px solid var(--accent); padding-left: 10px; }
-
-        .content { padding: 60px; }
-
-        /* CARDS & GRID */
-        .blueprint-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 2px;
-            background: var(--border);
-            border: 2px solid var(--primary);
-        }
-
-        .b-card {
-            background: var(--surface);
-            padding: 40px;
-            position: relative;
-            cursor: pointer;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .b-card:hover {
-            background: var(--primary);
-            color: var(--surface);
-        }
-
-        .b-card .id-tag {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.6rem;
-            margin-bottom: 20px;
-            opacity: 0.6;
-        }
-
-        .b-card h3 {
-            font-size: 1.8rem;
-            margin: 0;
-            font-weight: 300;
-            text-transform: uppercase;
-        }
-
-        /* CATALOGUE SPECIFIC */
-        .catalog-info {
+        /* --- HUB DE STATUT (EN BAS DE L'ASIDE) --- */
+        #statusBar {
+            margin-top: auto; /* Pousse l'élément tout en bas de la colonne */
+            padding-top: 30px;
             border-top: 1px solid var(--border);
-            margin-top: 20px;
-            padding-top: 20px;
-        }
-
-        .status-line {
-            height: 4px;
-            width: 100%;
-            margin-bottom: 15px;
-        }
-
-        .btn-open {
-            margin-top: auto;
-            border: 1px solid var(--primary);
-            background: transparent;
-            color: inherit;
-            padding: 15px;
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.7rem;
-            cursor: pointer;
-        }
-
-        .warning-strip {
-            background: var(--accent);
-            color: white;
-            padding: 10px;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 0.65rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-top: 20px;
         }
 
-        /* MODAL */
-        #detailsModal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
+        .status-item { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; 
+            margin-bottom: 15px;
+            text-transform: uppercase; 
         }
 
-        .modal-box {
-            background: var(--surface);
-            width: 90%;
-            max-width: 600px;
-            padding: 60px;
-            border: 1px solid var(--primary);
-        }
+        .status-label { opacity: 0.5; font-size: 0.6rem; }
+        .status-value { font-weight: 700; display: flex; align-items: center; gap: 6px; }
 
-        /* ANIMATIONS */
-        @keyframes slideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
-        .animate { animation: slideIn 0.4s ease forwards; }
+        .dot { width: 7px; height: 7px; display: inline-block; }
+        .dot.online { background: var(--online-green); box-shadow: 0 0 8px var(--online-green); }
+        .dot.offline { background: var(--offline-red); box-shadow: 0 0 8px var(--offline-red); }
 
+        /* --- GRILLE PRINCIPALE --- */
+        .content { padding: 60px; }
+        .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--primary); }
+        .b-card { background: var(--surface); padding: 40px; cursor: pointer; display: flex; flex-direction: column; }
+        .b-card:hover { background: var(--primary); color: var(--surface); }
+        .b-card h3 { font-size: 1.6rem; margin: 0; font-weight: 300; text-transform: uppercase; }
+
+        .btn-open { border: 1px solid var(--primary); background: transparent; color: inherit; padding: 15px; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; margin-top: 20px;}
+
+        /* Modal */
+        #detailsModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-box { background: var(--surface); width: 90%; max-width: 600px; padding: 60px; border: 1px solid var(--primary); color: var(--primary); }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        .online { animation: pulse 2s infinite; }
     </style>
 </head>
 <body>
 
 <header>
-    <a href="#" class="logo" onclick="location.reload()">RICHARDSON</a>
+    <a href="#" class="logo">RICHARDSON</a>
     <div class="search-container">
-        <input type="text" id="globalSearch" placeholder="RECHERCHE_INDEX_TECHNIQUE (MARQUE, DOMAINE, ANNÉE)...">
-    </div>
-    <div class="controls">
-        <button class="control-btn" onclick="toggleTheme()">Dark_Mode</button>
-        <button class="control-btn" onclick="showFavorites()">Favoris</button>
+        <input type="text" id="globalSearch" placeholder="SEARCH_ENGINE_v3.2 // IDENTIFIER_CATALOGUE_REQUIS...">
     </div>
 </header>
 
 <div class="main-wrapper">
     <aside>
-        <div id="sideNav">
-            <a href="#" class="nav-link active" onclick="renderDomaines()">// Univers_Index</a>
-            <div id="dynamicNav"></div>
+        <div class="nav-section-title">MENU_NAVIGATION</div>
+        <nav>
+            <a href="#" onclick="renderDomaines()" class="nav-link">// UNIVERS_INDEX</a>
+        </nav>
+
+        <div id="statusBar">
+            <div class="status-item">
+                <span class="status-label">Localisation_Agence</span>
+                <span class="status-value" style="color: var(--accent);">MOUGINS_FR_06</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Etat_Systeme</span>
+                <span class="status-value">
+                    <div id="networkDot" class="dot online"></div>
+                    <span id="networkText">ONLINE</span>
+                </span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Horodatage_Session</span>
+                <span class="status-value" id="liveDate">--/--/--</span>
+                <span class="status-value" id="liveTime" style="opacity: 0.6;">00:00:00</span>
+            </div>
         </div>
     </aside>
     
     <main class="content">
-        <div id="viewTitle" style="margin-bottom: 40px; opacity: 0.7; font-size: 0.7rem; text-transform: uppercase; font-weight: 700; letter-spacing: 2px;">
-            Root / Selection_Univers
-        </div>
-        <div id="app" class="blueprint-grid">
-            </div>
+        <div id="viewTitle" style="margin-bottom: 40px; opacity: 0.5; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;">Root / Index</div>
+        <div id="app" class="blueprint-grid"></div>
     </main>
 </div>
 
-<div id="detailsModal" onclick="closeModal()">
+<div id="detailsModal" onclick="this.style.display='none'">
     <div class="modal-box" onclick="event.stopPropagation()">
-        <h2 id="modalTitle" style="font-weight: 300; font-size: 3rem;">DOCUMENT_NAME</h2>
-        <p id="modalDesc" style="font-family: 'JetBrains Mono'; font-size: 0.8rem; margin: 40px 0;"></p>
-        <button class="btn-open" style="width: 100%; background: var(--primary); color: var(--surface);" onclick="closeModal()">VALIDER_CONSULTATION</button>
+        <h2 id="modalTitle" style="font-weight: 300; font-size: 2.5rem; margin: 0;"></h2>
+        <p id="modalDesc" style="font-family: 'JetBrains Mono'; font-size: 0.75rem; margin: 30px 0; opacity: 0.7;"></p>
+        <button class="btn-open" style="width: 100%; background: var(--primary); color: white;" onclick="document.getElementById('detailsModal').style.display='none'">FERMER_DOCUMENT</button>
     </div>
 </div>
 
 <script>
     const currentYear = 2026;
-    
     const db = {
-        "Sanitaire": {
-            "Grohe": { "2026": "G-S-26.pdf", "2025": "G-S-25.pdf" },
-            "Hansgrohe": { "2026": "HG-S-26.pdf" },
-            "Geberit": { "2024": "GEB-S-24.pdf" }
-        },
-        "Chauffage": {
-            "Viessmann": { "2026": "V-C-26.pdf" },
-            "De Dietrich": { "2025": "DD-C-25.pdf" },
-            "Saunier Duval": { "2026": "SD-C-26.pdf" }
-        },
-        "Plomberie": {
-            "Nicoll": { "2025": "N-P-25.pdf" },
-            "Viega": { "2026": "V-P-26.pdf" }
-        }
+        "Sanitaire": { "Grohe": { "2026": "PDF", "2025": "PDF" }, "Hansgrohe": { "2026": "PDF" }, "Geberit": { "2024": "PDF" } },
+        "Chauffage": { "Viessmann": { "2026": "PDF" }, "De Dietrich": { "2025": "PDF" }, "Saunier Duval": { "2026": "PDF" } },
+        "Plomberie": { "Nicoll": { "2025": "PDF" }, "Viega": { "2026": "PDF" } }
     };
-
-    let state = { view: 'domaines', domain: null, brand: null };
 
     const app = document.getElementById("app");
     const viewTitle = document.getElementById("viewTitle");
 
-    // --- LOGIQUE DE CALCUL ---
-    function getStatus(year) {
-        const y = parseInt(year);
-        if (y < currentYear) return { color: 'var(--danger)', label: 'ARCHIVE_OBSOLÈTE', warn: true };
-        if (new Date().getMonth() >= 6) return { color: 'var(--warning)', label: 'REV_CYCLE_PROCHE', warn: false };
-        return { color: 'var(--success)', label: 'CERTIFIÉ_VALIDE', warn: false };
-    }
-
-    // --- MOTEUR DE RENDU ---
     function renderDomaines() {
-        state.view = 'domaines';
         viewTitle.innerText = "Root / Selection_Univers";
         app.innerHTML = "";
         Object.keys(db).forEach((dom, i) => {
             const card = document.createElement("div");
-            card.className = "b-card animate";
-            card.style.animationDelay = `${i * 0.1}s`;
-            card.innerHTML = `
-                <div class="id-tag">REF_00${i+1}</div>
-                <h3>${dom}</h3>
-            `;
-            card.onclick = () => { state.domain = dom; renderBrands(); };
+            card.className = "b-card";
+            card.innerHTML = `<div style="font-family: 'JetBrains Mono'; font-size: 0.6rem; opacity: 0.4; margin-bottom:15px;">SEC_ID_00${i+1}</div><h3>${dom}</h3>`;
+            card.onclick = () => renderBrands(dom);
             app.appendChild(card);
         });
     }
 
-    function renderBrands() {
-        state.view = 'brands';
-        viewTitle.innerText = `Root / ${state.domain} / Selection_Marque`;
+    function renderBrands(dom) {
+        viewTitle.innerText = `Root / ${dom}`;
         app.innerHTML = "";
-        Object.keys(db[state.domain]).forEach((brand, i) => {
+        Object.keys(db[dom]).forEach(brand => {
             const card = document.createElement("div");
-            card.className = "b-card animate";
-            card.style.animationDelay = `${i * 0.05}s`;
-            card.innerHTML = `
-                <div class="id-tag">MQR_${brand.toUpperCase()}</div>
-                <h3>${brand}</h3>
-            `;
-            card.onclick = () => { state.brand = brand; renderFiles(); };
+            card.className = "b-card";
+            card.innerHTML = `<div style="font-family: 'JetBrains Mono'; font-size: 0.6rem; opacity: 0.4; margin-bottom:15px;">BRAND_KEY</div><h3>${brand}</h3>`;
+            card.onclick = () => renderFiles(dom, brand);
             app.appendChild(card);
         });
     }
 
-    function renderFiles() {
-        state.view = 'files';
-        viewTitle.innerText = `Root / ${state.domain} / ${state.brand} / Selection_Fichier`;
+    function renderFiles(dom, brand) {
+        viewTitle.innerText = `Root / ${dom} / ${brand}`;
         app.innerHTML = "";
-        Object.keys(db[state.domain][state.brand]).forEach((year, i) => {
-            const status = getStatus(year);
+        Object.keys(db[dom][brand]).forEach(year => {
+            const isOld = parseInt(year) < currentYear;
             const card = document.createElement("div");
-            card.className = "b-card animate";
+            card.className = "b-card";
             card.innerHTML = `
-                <div class="id-tag">FILE_REF_Y${year}</div>
-                <div class="status-line" style="background: ${status.color}"></div>
-                <div style="font-size: 0.6rem; font-weight: 800; color: ${status.color}">${status.label}</div>
-                <h3>${year}</h3>
-                <div class="catalog-info">
-                    <div style="font-size: 0.65rem; opacity: 0.6; margin-bottom: 10px;">PROVENANCE: FOURNISSEUR_DIRECT</div>
-                    <button class="btn-open" onclick="openDoc('${state.brand}', '${year}')">ACCÉDER_AU_PLAN</button>
-                    ${status.warn ? `<div class="warning-strip">VÉRIFICATION TARIF_FORCÉE</div>` : ''}
-                </div>
+                <div style="height: 4px; background: ${isOld ? '#7a1a1a' : '#1a472a'}; margin-bottom: 20px;"></div>
+                <div style="font-family: 'JetBrains Mono'; font-size: 0.6rem; font-weight:700; color: ${isOld ? '#7a1a1a' : '#1a472a'}">${isOld ? 'DATA_OBSOLETE' : 'DATA_VALID'}</div>
+                <h3>EDITION_${year}</h3>
+                <button class="btn-open" onclick="openDoc('${brand}', '${year}')">OUVRIR_L_ARCHIVE</button>
             `;
             app.appendChild(card);
         });
     }
 
-    // --- FONCTIONNALITÉS ---
     function openDoc(brand, year) {
         document.getElementById("detailsModal").style.display = "flex";
         document.getElementById("modalTitle").innerText = `${brand} // ${year}`;
-        document.getElementById("modalDesc").innerText = `LOG_EVENT: Ouverture de l'archive technique demandée.\nSTATUS: Fichier chargé depuis /catalogues/${brand.toLowerCase()}/${year}/main.pdf\nUSER_AUTH: Commercial_Logged_In`;
+        document.getElementById("modalDesc").innerText = `SYSTEM_LOG: Chargement de l'archive technique...\nSOURCE: /richardson/mougins/vault/${brand.toLowerCase()}.pdf\nINTEGRITY: 100%\nSTATUS: Accès autorisé.`;
     }
 
-    function closeModal() {
-        document.getElementById("detailsModal").style.display = "none";
+    // --- TEMPS REEL & CONNECTIVITE ---
+    function updateStatusBar() {
+        const now = new Date();
+        document.getElementById("liveTime").innerText = now.toTimeString().split(' ')[0];
+        document.getElementById("liveDate").innerText = now.toLocaleDateString('fr-FR');
+        
+        const dot = document.getElementById("networkDot");
+        const txt = document.getElementById("networkText");
+        if(navigator.onLine) {
+            dot.className = "dot online";
+            txt.innerText = "ONLINE";
+        } else {
+            dot.className = "dot offline";
+            txt.innerText = "OFFLINE";
+        }
     }
 
-    function toggleTheme() {
-        const theme = document.documentElement.getAttribute("data-theme");
-        document.documentElement.setAttribute("data-theme", theme === "light" ? "dark" : "light");
-    }
+    setInterval(updateStatusBar, 1000);
+    updateStatusBar();
+    renderDomaines();
 
-    // --- RECHERCHE GLOBALE ---
+    // Recherche simplifiée
     document.getElementById("globalSearch").oninput = (e) => {
         const val = e.target.value.toLowerCase();
         if(val.length < 2) return;
-        
-        viewTitle.innerText = "Recherche / Résultats_Instant_Search";
         app.innerHTML = "";
-        
         Object.keys(db).forEach(dom => {
             Object.keys(db[dom]).forEach(brand => {
-                Object.keys(db[dom][brand]).forEach(year => {
-                    if(brand.toLowerCase().includes(val) || year.includes(val) || dom.toLowerCase().includes(val)) {
-                        const card = document.createElement("div");
-                        card.className = "b-card animate";
-                        card.innerHTML = `<div class="id-tag">${dom}</div><h3>${brand} ${year}</h3>`;
-                        card.onclick = () => openDoc(brand, year);
-                        app.appendChild(card);
-                    }
-                });
+                if(brand.toLowerCase().includes(val)) {
+                    const card = document.createElement("div");
+                    card.className = "b-card";
+                    card.innerHTML = `<div style="font-size: 0.6rem; opacity: 0.4; margin-bottom:15px;">SEARCH_MATCH</div><h3>${brand}</h3>`;
+                    card.onclick = () => renderFiles(dom, brand);
+                    app.appendChild(card);
+                }
             });
         });
     };
-
-    renderDomaines();
 </script>
 
 </body>
