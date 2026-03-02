@@ -3,18 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDSON | B.P.O. v4.1</title>
+    <title>RICHARDSON | B.P.O. v4.2 Neon Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #f4f4f4; --surface: #ffffff; --primary: #001a33; --accent: #e30613;
             --text: #001a33; --border: #d1d1d1; --grid-color: rgba(0, 26, 51, 0.05);
             --online-green: #00ff88; --offline-red: #ff4444;
+            --neon-intensity: 0px 0px 0px transparent; /* Pas de glow par défaut */
         }
 
         [data-theme="dark"] {
             --bg: #0a0a0a; --surface: #121212; --primary: #ffffff;
             --text: #e0e0e0; --border: #2a2a2a; --grid-color: rgba(255, 255, 255, 0.03);
+            /* Intensité du néon en mode sombre */
+            --neon-intensity: 0px 0px 12px;
         }
 
         * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 0 !important; }
@@ -24,6 +27,19 @@
             background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 40px 40px; font-family: 'Inter', sans-serif; margin: 0; color: var(--text); min-height: 100vh;
         }
+
+        /* --- EFFETS NEON (DARK MODE UNIQUEMENT) --- */
+        [data-theme="dark"] .domain-color.sanitaire { box-shadow: var(--neon-intensity) #1e88e5; }
+        [data-theme="dark"] .domain-color.chauffage { box-shadow: var(--neon-intensity) #ff9800; }
+        [data-theme="dark"] .domain-color.plomberie { box-shadow: var(--neon-intensity) #4caf50; }
+        
+        [data-theme="dark"] .dot.online { box-shadow: var(--neon-intensity) var(--online-green); }
+        [data-theme="dark"] .catalog-status.valid { box-shadow: var(--neon-intensity) var(--online-green); }
+        [data-theme="dark"] .catalog-status.obsolete { box-shadow: var(--neon-intensity) var(--offline-red); }
+        [data-theme="dark"] .catalog-status.recent { box-shadow: var(--neon-intensity) #ffc107; }
+        
+        [data-theme="dark"] .pin-tag { box-shadow: var(--neon-intensity) var(--accent); }
+        [data-theme="dark"] #toast { box-shadow: var(--neon-intensity) var(--accent); }
 
         /* --- HEADER --- */
         header {
@@ -53,7 +69,7 @@
         .nav-link { text-decoration: none; color: var(--primary); font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 25px; opacity: 0.5; cursor: pointer; text-transform: uppercase;}
         .nav-link:hover, .nav-link.active { opacity: 1; color: var(--accent); }
 
-        /* --- STATUS HUB (BAS GAUCHE) --- */
+        /* --- STATUS HUB --- */
         #statusBar { margin-top: auto; padding-top: 30px; border-top: 2px solid var(--primary); font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; }
         .status-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px; text-transform: uppercase; }
         .status-value { font-weight: 700; display: flex; align-items: center; gap: 6px; font-size: 0.7rem; }
@@ -89,45 +105,16 @@
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
         /* Améliorations visuelles */
-        .domain-color {
-            height: 4px;
-            width: 100%;
-            margin-bottom: 20px;
-        }
+        .domain-color { height: 4px; width: 100%; margin-bottom: 20px; }
         .domain-color.sanitaire { background-color: #1e88e5; }
         .domain-color.chauffage { background-color: #ff9800; }
         .domain-color.plomberie { background-color: #4caf50; }
 
-        .catalog-year {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.6rem;
-            margin-bottom: 10px;
-            opacity: 0.7;
-        }
-
-        .catalog-status {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 2px;
-            font-size: 0.6rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .catalog-status.valid {
-            background-color: var(--online-green);
-            color: #000;
-        }
-
-        .catalog-status.obsolete {
-            background-color: var(--offline-red);
-            color: #000;
-        }
-
-        .catalog-status.recent {
-            background-color: #ffc107;
-            color: #000;
-        }
+        .catalog-year { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; margin-bottom: 10px; opacity: 0.7; }
+        .catalog-status { display: inline-block; padding: 2px 6px; border-radius: 2px; font-size: 0.6rem; font-weight: bold; margin-bottom: 15px; }
+        .catalog-status.valid { background-color: var(--online-green); color: #000; }
+        .catalog-status.obsolete { background-color: var(--offline-red); color: #000; }
+        .catalog-status.recent { background-color: #ffc107; color: #000; }
     </style>
 </head>
 <body>
@@ -189,7 +176,6 @@
     const app = document.getElementById("app");
     const viewTitle = document.getElementById("viewTitle");
 
-    // --- NAVIGATION LOGIQUE ---
     function setActiveLink(id) {
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById(id).classList.add('active');
@@ -234,16 +220,13 @@
         setActiveLink('nav-fav');
         viewTitle.innerText = "Root / Marques_Favorites";
         app.innerHTML = "";
-
         if (pinnedBrands.length === 0) {
             app.innerHTML = `<div style="padding:40px; font-family:'JetBrains Mono'; opacity:0.5;">[ AUCUNE MARQUE ÉPINGLÉE ] <br> Faites un clic-droit sur une marque pour l'ajouter ici.</div>`;
             return;
         }
-
         pinnedBrands.forEach(brand => {
             let foundDom = "";
             Object.keys(db).forEach(dom => { if(db[dom][brand]) foundDom = dom; });
-
             const card = document.createElement("div");
             card.className = "b-card is-pinned";
             card.innerHTML = `
@@ -261,21 +244,12 @@
     function renderFiles(dom, brand) {
         viewTitle.innerText = `Root / ${dom} / ${brand}`;
         app.innerHTML = `<div class="b-card" onclick="renderBrands('${dom}')" style="border:1px solid var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
-
         db[dom][brand].forEach(year => {
             const yearInt = parseInt(year);
             let status, statusClass;
-
-            if (yearInt === currentYear) {
-                status = "RECENT";
-                statusClass = "recent";
-            } else if (yearInt === currentYear - 1) {
-                status = "VALIDATED";
-                statusClass = "valid";
-            } else {
-                status = "OBSOLETE";
-                statusClass = "obsolete";
-            }
+            if (yearInt === currentYear) { status = "RECENT"; statusClass = "recent"; }
+            else if (yearInt === currentYear - 1) { status = "VALIDATED"; statusClass = "valid"; }
+            else { status = "OBSOLETE"; statusClass = "obsolete"; }
 
             const card = document.createElement("div");
             card.className = "b-card";
@@ -293,13 +267,12 @@
     function togglePin(brand) {
         if(pinnedBrands.includes(brand)) {
             pinnedBrands = pinnedBrands.filter(b => b !== brand);
-            showToast(brand + " retiré des favoris");
+            showToast(brand + " retiré");
         } else {
             pinnedBrands.push(brand);
             showToast(brand + " épinglé");
         }
         localStorage.setItem('richardson_pinned', JSON.stringify(pinnedBrands));
-
         if(document.getElementById('nav-fav').classList.contains('active')) renderPinned();
         else {
             const currentDom = viewTitle.innerText.split(' / ')[1];
@@ -334,11 +307,8 @@
         a.click();
     }
 
-    function openCatalog(dom, brand, year) {
-        showToast(`Ouverture du catalogue ${brand} ${year}`);
-        // ICI TU PEUX AJOUTER LA LOGIQUE POUR OUVRIR LE CATALOGUE
-        console.log(`Ouvrir le catalogue: Domaine=${dom}, Marque=${brand}, Année=${year}`);
-    }
+    function openCatalog(dom, brand, year) { showToast(`Ouverture ${brand} ${year}`); }
+    function toggleHelp() { showToast("Clic droit pour épingler."); }
 
     function updateTime() {
         const now = new Date();
@@ -346,79 +316,38 @@
         document.getElementById("liveDate").innerText = now.toLocaleDateString('fr-FR');
     }
 
-    // Recherche globale
+    // Recherche
     document.getElementById("globalSearch").addEventListener("input", function(e) {
         const searchTerm = e.target.value.toLowerCase();
         if (searchTerm.length < 2) {
-            if (document.getElementById('nav-all').classList.contains('active')) {
-                renderDomaines();
-            } else if (document.getElementById('nav-fav').classList.contains('active')) {
-                renderPinned();
-            }
+            if (document.getElementById('nav-all').classList.contains('active')) renderDomaines();
+            else if (document.getElementById('nav-fav').classList.contains('active')) renderPinned();
             return;
         }
-
         app.innerHTML = "";
         let found = false;
-
-        // Recherche dans les domaines
         Object.keys(db).forEach(dom => {
             if (dom.toLowerCase().includes(searchTerm)) {
                 const card = document.createElement("div");
                 card.className = "b-card";
-                card.innerHTML = `
-                    <div class="domain-color ${dom.toLowerCase()}"></div>
-                    <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">SEC_ID_00${Object.keys(db).indexOf(dom)+1}</div>
-                    <h3>${dom}</h3>
-                `;
+                card.innerHTML = `<div class="domain-color ${dom.toLowerCase()}"></div><h3>${dom}</h3>`;
                 card.onclick = () => renderBrands(dom);
                 app.appendChild(card);
                 found = true;
             }
-
-            // Recherche dans les marques
             Object.keys(db[dom]).forEach(brand => {
                 if (brand.toLowerCase().includes(searchTerm)) {
                     const card = document.createElement("div");
                     card.className = "b-card";
-                    card.innerHTML = `
-                        <div class="domain-color ${dom.toLowerCase()}"></div>
-                        <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">MQR_${brand.toUpperCase()}</div>
-                        <h3>${brand}</h3>
-                        <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4;">${dom}</div>
-                    `;
+                    card.innerHTML = `<div class="domain-color ${dom.toLowerCase()}"></div><h3>${brand}</h3><div style="opacity:0.4">${dom}</div>`;
                     card.onclick = () => renderFiles(dom, brand);
                     app.appendChild(card);
                     found = true;
                 }
-
-                // Recherche dans les années
-                db[dom][brand].forEach(year => {
-                    if (year.includes(searchTerm)) {
-                        const card = document.createElement("div");
-                        card.className = "b-card";
-                        card.innerHTML = `
-                            <div class="domain-color ${dom.toLowerCase()}"></div>
-                            <div class="catalog-year">EDITION ${year}</div>
-                            <h3>${brand}</h3>
-                            <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4;">${dom}</div>
-                        `;
-                        card.onclick = () => renderFiles(dom, brand);
-                        app.appendChild(card);
-                        found = true;
-                    }
-                });
             });
         });
-
-        if (!found) {
-            app.innerHTML = `<div style="padding:40px; font-family:'JetBrains Mono'; opacity:0.5;">AUCUN RÉSULTAT POUR "${searchTerm.toUpperCase()}"</div>`;
-        }
+        if (!found) app.innerHTML = `<div style="padding:40px; opacity:0.5;">AUCUN RÉSULTAT</div>`;
     });
-
-    function toggleHelp() {
-        showToast("Aide en cours de développement");
-    }
 
     setInterval(updateTime, 1000);
     updateTime();
