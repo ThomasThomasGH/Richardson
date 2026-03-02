@@ -1,45 +1,58 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="light">
+<html lang="fr" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDSON | B.P.O. v4.2 Neon Edition</title>
+    <title>RICHARDSON | B.P.O. v4.5 Paroxysme</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #f4f4f4; --surface: #ffffff; --primary: #001a33; --accent: #e30613;
             --text: #001a33; --border: #d1d1d1; --grid-color: rgba(0, 26, 51, 0.05);
             --online-green: #00ff88; --offline-red: #ff4444;
-            --neon-intensity: 0px 0px 0px transparent; /* Pas de glow par défaut */
+            --neon-glow: 0 0 0px transparent;
         }
 
         [data-theme="dark"] {
-            --bg: #0a0a0a; --surface: #121212; --primary: #ffffff;
-            --text: #e0e0e0; --border: #2a2a2a; --grid-color: rgba(255, 255, 255, 0.03);
-            /* Intensité du néon en mode sombre */
-            --neon-intensity: 0px 0px 12px;
+            --bg: #050505; --surface: #0a0a0a; --primary: #ffffff;
+            --text: #e0e0e0; --border: #1a1a1a; --grid-color: rgba(255, 255, 255, 0.02);
+            --neon-glow: 0 0 12px;
         }
 
-        * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 0 !important; }
+        * { box-sizing: border-box; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 0 !important; }
         
         body {
             background-color: var(--bg);
             background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 40px 40px; font-family: 'Inter', sans-serif; margin: 0; color: var(--text); min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* --- EFFETS NEON (DARK MODE UNIQUEMENT) --- */
-        [data-theme="dark"] .domain-color.sanitaire { box-shadow: var(--neon-intensity) #1e88e5; }
-        [data-theme="dark"] .domain-color.chauffage { box-shadow: var(--neon-intensity) #ff9800; }
-        [data-theme="dark"] .domain-color.plomberie { box-shadow: var(--neon-intensity) #4caf50; }
-        
-        [data-theme="dark"] .dot.online { box-shadow: var(--neon-intensity) var(--online-green); }
-        [data-theme="dark"] .catalog-status.valid { box-shadow: var(--neon-intensity) var(--online-green); }
-        [data-theme="dark"] .catalog-status.obsolete { box-shadow: var(--neon-intensity) var(--offline-red); }
-        [data-theme="dark"] .catalog-status.recent { box-shadow: var(--neon-intensity) #ffc107; }
-        
-        [data-theme="dark"] .pin-tag { box-shadow: var(--neon-intensity) var(--accent); }
-        [data-theme="dark"] #toast { box-shadow: var(--neon-intensity) var(--accent); }
+        /* --- ANIMATIONS DE CHARGEMENT SYSTÈME --- */
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(15px) scale(0.98); filter: blur(4px); }
+            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        @keyframes scanLine {
+            0% { top: -10%; opacity: 0; }
+            50% { opacity: 0.4; }
+            100% { top: 110%; opacity: 0; }
+        }
+
+        @keyframes neonBreath {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 2px var(--line-color)); }
+            50% { filter: brightness(1.4) drop-shadow(0 0 8px var(--line-color)); }
+        }
+
+        @keyframes subtleGlitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(-1px, -1px); }
+            60% { transform: translate(1px, 1px); }
+            80% { transform: translate(1px, -1px); }
+            100% { transform: translate(0); }
+        }
 
         /* --- HEADER --- */
         header {
@@ -48,15 +61,21 @@
         }
 
         .logo { font-weight: 900; font-size: 1.4rem; letter-spacing: 4px; text-decoration: none; color: var(--primary); }
+        .logo span { color: var(--accent); }
+
         .search-container { flex-grow: 1; margin: 0 60px; }
-        #globalSearch { width: 100%; background: transparent; border: 1px solid var(--border); padding: 12px 20px; font-family: 'JetBrains Mono', monospace; color: var(--primary); font-size: 0.8rem; outline: none; }
+        #globalSearch { 
+            width: 100%; background: transparent; border: 1px solid var(--border); padding: 12px 20px; 
+            font-family: 'JetBrains Mono', monospace; color: var(--primary); font-size: 0.8rem; outline: none; 
+        }
+        #globalSearch:focus { border-color: var(--accent); background: rgba(227, 6, 19, 0.02); }
 
         .header-actions { display: flex; gap: 10px; }
         .action-btn {
             background: var(--primary); color: var(--surface); border: none; padding: 10px 15px;
             font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 700; cursor: pointer; text-transform: uppercase;
         }
-        .action-btn:hover { background: var(--accent); color: white; transform: translateY(-2px); }
+        .action-btn:hover { background: var(--accent); transform: translateY(-2px); }
 
         /* --- LAYOUT --- */
         .main-wrapper { display: grid; grid-template-columns: 320px 1fr; min-height: calc(100vh - 80px); }
@@ -66,28 +85,74 @@
             display: flex; flex-direction: column; position: sticky; top: 80px; height: calc(100vh - 80px);
         }
 
-        .nav-link { text-decoration: none; color: var(--primary); font-size: 0.75rem; font-weight: 700; display: block; margin-bottom: 25px; opacity: 0.5; cursor: pointer; text-transform: uppercase;}
-        .nav-link:hover, .nav-link.active { opacity: 1; color: var(--accent); }
+        .nav-link { 
+            text-decoration: none; color: var(--primary); font-size: 0.75rem; font-weight: 700; 
+            display: block; margin-bottom: 25px; opacity: 0.5; cursor: pointer; text-transform: uppercase;
+        }
+        .nav-link:hover, .nav-link.active { opacity: 1; color: var(--accent); padding-left: 5px; }
 
         /* --- STATUS HUB --- */
         #statusBar { margin-top: auto; padding-top: 30px; border-top: 2px solid var(--primary); font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; }
         .status-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px; text-transform: uppercase; }
         .status-value { font-weight: 700; display: flex; align-items: center; gap: 6px; font-size: 0.7rem; }
         .dot { width: 8px; height: 8px; border: 1px solid var(--primary); }
-        .dot.online { background: var(--online-green); animation: pulse 2s infinite; }
+        .dot.online { 
+            background: var(--online-green); 
+            box-shadow: var(--neon-glow) var(--online-green);
+            animation: pulse 2s infinite; 
+        }
 
-        /* --- CONTENT --- */
+        /* --- CARDS & GRID --- */
         .content { padding: 60px; }
-        .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--primary); }
+        .blueprint-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
+            gap: 1px; background: var(--border); border: 1px solid var(--primary); 
+        }
 
         .b-card {
-            background: var(--surface); padding: 50px 40px; cursor: pointer; display: flex; flex-direction: column; position: relative;
+            background: var(--surface); padding: 50px 40px; cursor: pointer; 
+            display: flex; flex-direction: column; position: relative; overflow: hidden;
+            animation: cardEntrance 0.5s ease backwards;
         }
-        .b-card:hover { background: var(--primary); color: var(--surface); transform: scale(1.01); z-index: 2; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
-        .b-card h3 { font-size: 1.8rem; margin: 0; font-weight: 300; text-transform: uppercase; letter-spacing: -1px; }
 
-        .pin-tag { position: absolute; top: 20px; right: 20px; font-size: 0.55rem; font-family: 'JetBrains Mono'; color: var(--accent); border: 1px solid var(--accent); padding: 2px 5px; font-weight: 700; display: none; }
+        /* Effet Scan Laser au survol */
+        .b-card::after {
+            content: ""; position: absolute; left: 0; width: 100%; height: 1px;
+            background: var(--accent); opacity: 0; pointer-events: none;
+        }
+        .b-card:hover::after { animation: scanLine 0.8s linear forwards; }
+        
+        .b-card:hover { background: var(--primary); color: var(--surface); transform: scale(1.01); z-index: 2; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+        .b-card h3 { font-size: 1.8rem; margin: 0; font-weight: 300; text-transform: uppercase; letter-spacing: -1px; position: relative; }
+
+        .pin-tag { 
+            position: absolute; top: 20px; right: 20px; font-size: 0.55rem; font-family: 'JetBrains Mono'; 
+            color: var(--accent); border: 1px solid var(--accent); padding: 2px 5px; font-weight: 700; 
+            display: none; box-shadow: var(--neon-glow) var(--accent);
+        }
         .b-card.is-pinned .pin-tag { display: block; }
+
+        /* Éléments de couleur (Néon Discret) */
+        .domain-color { 
+            height: 4px; width: 100%; margin-bottom: 20px; position: relative;
+            background-color: var(--line-color);
+        }
+        [data-theme="dark"] .domain-color { 
+            box-shadow: var(--neon-glow) var(--line-color);
+            animation: neonBreath 4s infinite ease-in-out;
+        }
+
+        /* Status Pills */
+        .catalog-status { 
+            display: inline-block; padding: 2px 8px; font-size: 0.6rem; 
+            font-weight: bold; margin-bottom: 15px; text-transform: uppercase;
+        }
+        .catalog-status.valid { background: var(--online-green); color: #000; box-shadow: var(--neon-glow) var(--online-green); }
+        .catalog-status.recent { background: #ffc107; color: #000; box-shadow: var(--neon-glow) #ffc107; }
+        .catalog-status.obsolete { 
+            background: var(--offline-red); color: #fff; box-shadow: var(--neon-glow) var(--offline-red);
+            animation: subtleGlitch 2s infinite;
+        }
 
         .btn-action {
             border: 1px solid var(--primary); background: transparent; color: inherit; padding: 15px;
@@ -98,42 +163,35 @@
         #toast {
             position: fixed; bottom: 30px; right: 30px; background: var(--primary); color: var(--surface);
             padding: 15px 25px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
-            transform: translateY(150%); transition: 0.4s; z-index: 3000; border: 1px solid var(--accent);
+            transform: translateY(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            z-index: 3000; border: 1px solid var(--accent); box-shadow: var(--neon-glow) var(--accent);
         }
         #toast.show { transform: translateY(0); }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
 
-        /* Améliorations visuelles */
-        .domain-color { height: 4px; width: 100%; margin-bottom: 20px; }
-        .domain-color.sanitaire { background-color: #1e88e5; }
-        .domain-color.chauffage { background-color: #ff9800; }
-        .domain-color.plomberie { background-color: #4caf50; }
-
-        .catalog-year { font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; margin-bottom: 10px; opacity: 0.7; }
-        .catalog-status { display: inline-block; padding: 2px 6px; border-radius: 2px; font-size: 0.6rem; font-weight: bold; margin-bottom: 15px; }
-        .catalog-status.valid { background-color: var(--online-green); color: #000; }
-        .catalog-status.obsolete { background-color: var(--offline-red); color: #000; }
-        .catalog-status.recent { background-color: #ffc107; color: #000; }
+        /* Couleurs Univers */
+        .c-sanitaire { --line-color: #1e88e5; }
+        .c-chauffage { --line-color: #ff9800; }
+        .c-plomberie { --line-color: #4caf50; }
     </style>
 </head>
-<body>
+<body data-theme="dark">
 
 <header>
-    <a href="#" class="logo">RICHARDSON_B.P.O.</a>
+    <a href="#" class="logo" onclick="renderDomaines()">RICHARDSON_<span>B.P.O.</span></a>
     <div class="search-container">
-        <input type="text" id="globalSearch" placeholder="RECHERCHE_INDEX // FILTRER MARQUE OU ANNEE...">
+        <input type="text" id="globalSearch" placeholder="ACCESS_DATABASE // SCANNER L'INDEX...">
     </div>
     <div class="header-actions">
         <button class="action-btn" onclick="exportInventory()">[ ↓ ] Rapport</button>
-        <button class="action-btn" onclick="toggleTheme()">Dark_Mode</button>
-        <button class="action-btn" onclick="toggleHelp()">Aide</button>
+        <button class="action-btn" onclick="toggleTheme()" id="themeBtn">Light_Mode</button>
     </div>
 </header>
 
 <div class="main-wrapper">
     <aside>
-        <div style="font-size: 0.6rem; font-weight: 800; margin-bottom: 30px; opacity: 0.4; letter-spacing: 2px;">SYSTEM_NAV</div>
+        <div style="font-size: 0.6rem; font-weight: 800; margin-bottom: 30px; opacity: 0.4; letter-spacing: 2px;">SYSTEM_CONTROL</div>
         <nav>
             <div id="nav-all" onclick="renderDomaines()" class="nav-link active">// TOUS_LES_DOCUMENTS</div>
             <div id="nav-fav" onclick="renderPinned()" class="nav-link">// MARQUES_FAVORITES</div>
@@ -141,17 +199,16 @@
 
         <div id="statusBar">
             <div class="status-item">
-                <span style="opacity:0.5">Agence_Ref</span>
+                <span style="opacity:0.4">Node_Agence</span>
                 <span class="status-value" style="color: var(--accent);">MOUGINS_06_FR</span>
             </div>
             <div class="status-item">
-                <span style="opacity:0.5">Status</span>
-                <span class="status-value"><div class="dot online"></div><span id="networkText">STABLE</span></span>
+                <span style="opacity:0.4">Status</span>
+                <span class="status-value"><div class="dot online"></div><span id="networkText">SYSTEM_STABLE</span></span>
             </div>
             <div class="status-item">
-                <span style="opacity:0.5">Timestamp</span>
-                <span class="status-value" id="liveDate">--/--/--</span>
-                <span class="status-value" id="liveTime" style="opacity: 0.5;">00:00:00</span>
+                <span style="opacity:0.4">Uptime</span>
+                <span class="status-value" id="liveTime">00:00:00</span>
             </div>
         </div>
     </aside>
@@ -167,29 +224,33 @@
 <script>
     const currentYear = new Date().getFullYear();
     const db = {
-        "Sanitaire": { "Grohe": ["2026", "2025"], "Hansgrohe": ["2026"], "Geberit": ["2024"], "Villeroy & Boch": ["2026"] },
-        "Chauffage": { "Viessmann": ["2026"], "De Dietrich": ["2025"], "Saunier Duval": ["2026"], "Atlantic": ["2026"] },
-        "Plomberie": { "Nicoll": ["2025"], "Viega": ["2026"], "Watts": ["2024"] }
+        "Sanitaire": { color: "c-sanitaire", brands: { "Grohe": ["2026", "2025"], "Hansgrohe": ["2026"], "Geberit": ["2024"], "Villeroy & Boch": ["2026"] }},
+        "Chauffage": { color: "c-chauffage", brands: { "Viessmann": ["2026"], "De Dietrich": ["2025"], "Saunier Duval": ["2026"], "Atlantic": ["2026"] }},
+        "Plomberie": { color: "c-plomberie", brands: { "Nicoll": ["2025"], "Viega": ["2026"], "Watts": ["2024"] }}
     };
 
     let pinnedBrands = JSON.parse(localStorage.getItem('richardson_pinned')) || [];
     const app = document.getElementById("app");
     const viewTitle = document.getElementById("viewTitle");
 
-    function setActiveLink(id) {
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
+    function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.innerText = "> " + msg.toUpperCase();
+        t.classList.add("show");
+        setTimeout(() => t.classList.remove("show"), 3000);
     }
 
     function renderDomaines() {
-        setActiveLink('nav-all');
-        viewTitle.innerText = "Root / Selection_Univers";
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById('nav-all').classList.add('active');
+        viewTitle.innerText = "Root / Main_Index";
         app.innerHTML = "";
         Object.keys(db).forEach((dom, i) => {
             const card = document.createElement("div");
             card.className = "b-card";
+            card.style.animationDelay = `${i * 0.1}s`;
             card.innerHTML = `
-                <div class="domain-color ${dom.toLowerCase()}"></div>
+                <div class="domain-color ${db[dom].color}"></div>
                 <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">SEC_ID_00${i+1}</div>
                 <h3>${dom}</h3>
             `;
@@ -199,41 +260,67 @@
     }
 
     function renderBrands(dom) {
-        viewTitle.innerText = `Root / ${dom}`;
-        app.innerHTML = `<div class="b-card" onclick="renderDomaines()" style="border:1px solid var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
-        Object.keys(db[dom]).forEach(brand => {
+        viewTitle.innerText = `Root / ${dom.toUpperCase()}`;
+        app.innerHTML = `<div class="b-card" onclick="renderDomaines()" style="border-color:var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
+        Object.keys(db[dom].brands).forEach((brand, i) => {
             const isPinned = pinnedBrands.includes(brand);
             const card = document.createElement("div");
             card.className = `b-card ${isPinned ? 'is-pinned' : ''}`;
+            card.style.animationDelay = `${i * 0.05}s`;
             card.innerHTML = `
-                <div class="pin-tag">PINNED</div>
+                <div class="pin-tag">FAVORIS</div>
+                <div class="domain-color ${db[dom].color}"></div>
                 <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">MQR_${brand.toUpperCase()}</div>
                 <h3>${brand}</h3>
             `;
             card.onclick = () => renderFiles(dom, brand);
-            card.oncontextmenu = (e) => { e.preventDefault(); togglePin(brand); };
+            card.oncontextmenu = (e) => { e.preventDefault(); togglePin(brand, dom); };
+            app.appendChild(card);
+        });
+    }
+
+    function renderFiles(dom, brand) {
+        viewTitle.innerText = `Root / ${dom} / ${brand}`;
+        app.innerHTML = `<div class="b-card" onclick="renderBrands('${dom}')" style="border-color:var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
+        db[dom].brands[brand].forEach((year, i) => {
+            const yearInt = parseInt(year);
+            let status = "OBSOLETE", sClass = "obsolete";
+            if (yearInt === currentYear) { status = "RECENT"; sClass = "recent"; }
+            else if (yearInt === currentYear - 1) { status = "VALIDATED"; sClass = "valid"; }
+            
+            const card = document.createElement("div");
+            card.className = "b-card";
+            card.style.animationDelay = `${i * 0.1}s`;
+            card.innerHTML = `
+                <div class="catalog-status ${sClass}">${status}</div>
+                <div style="font-family:'JetBrains Mono'; font-size:0.6rem; opacity:0.4; margin-bottom:5px;">ARCHIVE_SYS</div>
+                <h3>EDITION ${year}</h3>
+                <button class="btn-action" onclick="showToast('Ouverture du PDF...')">OUVRIR_L_ARCHIVE</button>
+            `;
             app.appendChild(card);
         });
     }
 
     function renderPinned() {
-        setActiveLink('nav-fav');
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        document.getElementById('nav-fav').classList.add('active');
         viewTitle.innerText = "Root / Marques_Favorites";
         app.innerHTML = "";
         if (pinnedBrands.length === 0) {
-            app.innerHTML = `<div style="padding:40px; font-family:'JetBrains Mono'; opacity:0.5;">[ AUCUNE MARQUE ÉPINGLÉE ] <br> Faites un clic-droit sur une marque pour l'ajouter ici.</div>`;
+            app.innerHTML = `<div style="padding:40px; opacity:0.4; font-family:'JetBrains Mono';">AUCUNE DONNÉE ÉPINGLÉE</div>`;
             return;
         }
-        pinnedBrands.forEach(brand => {
+        pinnedBrands.forEach((brand, i) => {
             let foundDom = "";
-            Object.keys(db).forEach(dom => { if(db[dom][brand]) foundDom = dom; });
+            Object.keys(db).forEach(dom => { if(db[dom].brands[brand]) foundDom = dom; });
             const card = document.createElement("div");
             card.className = "b-card is-pinned";
+            card.style.animationDelay = `${i * 0.1}s`;
             card.innerHTML = `
-                <div class="domain-color ${foundDom.toLowerCase()}"></div>
-                <div class="pin-tag">PINNED</div>
-                <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">FAV_DOC</div>
+                <div class="pin-tag">FAVORIS</div>
+                <div class="domain-color ${db[foundDom].color}"></div>
                 <h3>${brand}</h3>
+                <div style="font-size:0.6rem; opacity:0.4; margin-top:10px;">${foundDom.toUpperCase()}</div>
             `;
             card.onclick = () => renderFiles(foundDom, brand);
             card.oncontextmenu = (e) => { e.preventDefault(); togglePin(brand); };
@@ -241,117 +328,42 @@
         });
     }
 
-    function renderFiles(dom, brand) {
-        viewTitle.innerText = `Root / ${dom} / ${brand}`;
-        app.innerHTML = `<div class="b-card" onclick="renderBrands('${dom}')" style="border:1px solid var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
-        db[dom][brand].forEach(year => {
-            const yearInt = parseInt(year);
-            let status, statusClass;
-            if (yearInt === currentYear) { status = "RECENT"; statusClass = "recent"; }
-            else if (yearInt === currentYear - 1) { status = "VALIDATED"; statusClass = "valid"; }
-            else { status = "OBSOLETE"; statusClass = "obsolete"; }
-
-            const card = document.createElement("div");
-            card.className = "b-card";
-            card.innerHTML = `
-                <div class="domain-color ${dom.toLowerCase()}"></div>
-                <div class="catalog-status ${statusClass}">${status}</div>
-                <div class="catalog-year">EDITION ${year}</div>
-                <h3>${brand}</h3>
-                <button class="btn-action" onclick="openCatalog('${dom}', '${brand}', '${year}')">OUVRIR_L_ARCHIVE</button>
-            `;
-            app.appendChild(card);
-        });
-    }
-
-    function togglePin(brand) {
-        if(pinnedBrands.includes(brand)) {
-            pinnedBrands = pinnedBrands.filter(b => b !== brand);
-            showToast(brand + " retiré");
-        } else {
-            pinnedBrands.push(brand);
-            showToast(brand + " épinglé");
-        }
+    function togglePin(brand, currentDom) {
+        if(pinnedBrands.includes(brand)) pinnedBrands = pinnedBrands.filter(b => b !== brand);
+        else pinnedBrands.push(brand);
         localStorage.setItem('richardson_pinned', JSON.stringify(pinnedBrands));
-        if(document.getElementById('nav-fav').classList.contains('active')) renderPinned();
-        else {
-            const currentDom = viewTitle.innerText.split(' / ')[1];
-            if(db[currentDom]) renderBrands(currentDom);
-        }
-    }
-
-    function showToast(msg) {
-        const t = document.getElementById("toast");
-        t.innerText = "> " + msg.toUpperCase();
-        t.classList.add("show");
-        setTimeout(() => t.classList.remove("show"), 3000);
+        showToast(brand + " mis à jour");
+        if(currentDom) renderBrands(currentDom); else renderPinned();
     }
 
     function toggleTheme() {
         const body = document.body;
-        const newTheme = body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        body.setAttribute('data-theme', newTheme);
-        showToast("Thème : " + newTheme.toUpperCase());
+        const isDark = body.getAttribute('data-theme') === 'dark';
+        body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+        document.getElementById('themeBtn').innerText = isDark ? "Dark_Mode" : "Light_Mode";
     }
 
     function exportInventory() {
-        let txt = "RAPPORT_MOUGINS_" + new Date().toLocaleDateString() + "\n\n";
+        let txt = "RAPPORT_RICHARDSON_BPO\n" + "-".repeat(30) + "\n";
         Object.keys(db).forEach(d => {
-            txt += `[${d}]\n`;
-            Object.keys(db[d]).forEach(b => txt += ` - ${b} (${db[d][b].join(', ')})\n`);
+            txt += `\n[${d}]\n`;
+            Object.keys(db[d].brands).forEach(b => txt += ` - ${b} (${db[d].brands[b].join(', ')})\n`);
         });
         const blob = new Blob([txt], {type: "text/plain"});
         const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "Rapport_Mougins.txt";
+        a.download = "Rapport_Systeme.txt";
         a.click();
     }
 
-    function openCatalog(dom, brand, year) { showToast(`Ouverture ${brand} ${year}`); }
-    function toggleHelp() { showToast("Clic droit pour épingler."); }
-
     function updateTime() {
-        const now = new Date();
-        document.getElementById("liveTime").innerText = now.toTimeString().split(' ')[0];
-        document.getElementById("liveDate").innerText = now.toLocaleDateString('fr-FR');
+        document.getElementById("liveTime").innerText = new Date().toTimeString().split(' ')[0];
     }
-
-    // Recherche
-    document.getElementById("globalSearch").addEventListener("input", function(e) {
-        const searchTerm = e.target.value.toLowerCase();
-        if (searchTerm.length < 2) {
-            if (document.getElementById('nav-all').classList.contains('active')) renderDomaines();
-            else if (document.getElementById('nav-fav').classList.contains('active')) renderPinned();
-            return;
-        }
-        app.innerHTML = "";
-        let found = false;
-        Object.keys(db).forEach(dom => {
-            if (dom.toLowerCase().includes(searchTerm)) {
-                const card = document.createElement("div");
-                card.className = "b-card";
-                card.innerHTML = `<div class="domain-color ${dom.toLowerCase()}"></div><h3>${dom}</h3>`;
-                card.onclick = () => renderBrands(dom);
-                app.appendChild(card);
-                found = true;
-            }
-            Object.keys(db[dom]).forEach(brand => {
-                if (brand.toLowerCase().includes(searchTerm)) {
-                    const card = document.createElement("div");
-                    card.className = "b-card";
-                    card.innerHTML = `<div class="domain-color ${dom.toLowerCase()}"></div><h3>${brand}</h3><div style="opacity:0.4">${dom}</div>`;
-                    card.onclick = () => renderFiles(dom, brand);
-                    app.appendChild(card);
-                    found = true;
-                }
-            });
-        });
-        if (!found) app.innerHTML = `<div style="padding:40px; opacity:0.5;">AUCUN RÉSULTAT</div>`;
-    });
 
     setInterval(updateTime, 1000);
     updateTime();
     renderDomaines();
+
 </script>
 </body>
 </html>
