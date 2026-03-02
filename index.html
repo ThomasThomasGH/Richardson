@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archivage des Catalogues</title>
+    <style>
+        /* --- CSS : Design & Mise en page --- */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f9; margin: 0; padding: 20px; display: flex; justify-content: center; }
+        .container { width: 100%; max-width: 800px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; text-align: center; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .step { display: none; animation: fadeIn 0.5s; }
+        .active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .btn-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px; }
+        button { padding: 15px; border: none; border-radius: 8px; background: #3498db; color: white; cursor: pointer; transition: 0.3s; font-size: 16px; font-weight: bold; }
+        button:hover { background: #2980b9; transform: scale(1.02); }
+        .back-btn { background: #95a5a6; margin-top: 20px; width: 100%; }
+        
+        .file-list { list-style: none; padding: 0; }
+        .file-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #eee; background: #fafafa; margin-bottom: 5px; border-radius: 5px; }
+        .status { font-size: 0.9em; color: #27ae60; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📦 Archivage des Catalogues</h1>
+
+    <div id="step1" class="step active">
+        <p style="text-align:center;">Bienvenue dans l'outil de gestion des archives.</p>
+        <button style="width:100%" onclick="nextStep(2)">Commencer la recherche</button>
+    </div>
+
+    <div id="step2" class="step">
+        <h3>1. Sélectionnez un Domaine</h3>
+        <div class="btn-grid">
+            <button onclick="selectDomain('Sanitaire')">🚿 Sanitaire</button>
+            <button onclick="selectDomain('Chauffage')">🔥 Chauffage</button>
+            <button onclick="selectDomain('Plomberie')">🔧 Plomberie</button>
+        </div>
+        <button class="back-btn" onclick="nextStep(1)">⬅ Retour</button>
+    </div>
+
+    <div id="step3" class="step">
+        <h3>2. Marques : <span id="display-domain" style="color:#3498db"></span></h3>
+        <div id="brand-buttons" class="btn-grid"></div>
+        <button class="back-btn" onclick="nextStep(2)">⬅ Retour</button>
+    </div>
+
+    <div id="step4" class="step">
+        <h3>3. Choisir l'Année (<span id="display-brand"></span>)</h3>
+        <div class="btn-grid">
+            <button onclick="selectYear('2024')">2024</button>
+            <button onclick="selectYear('2023')">2023</button>
+            <button onclick="selectYear('2022')">2022</button>
+        </div>
+        <button class="back-btn" onclick="nextStep(3)">⬅ Retour</button>
+    </div>
+
+    <div id="step5" class="step">
+        <h3>4. Documents disponibles (<span id="display-year"></span>)</h3>
+        <ul class="file-list" id="file-list">
+            </ul>
+        <button class="back-btn" onclick="nextStep(4)">⬅ Nouvelle recherche</button>
+    </div>
+</div>
+
+<script>
+    /* --- JAVASCRIPT : Logique de navigation --- */
+    const data = {
+        'Sanitaire': ['Grohe', 'Hansgrohe', 'Geberit'],
+        'Chauffage': ['Viessmann', 'De Dietrich', 'Saunier Duval'],
+        'Plomberie': ['Nicoll', 'Viega']
+    };
+
+    let selection = { domain: '', brand: '', year: '' };
+
+    function nextStep(stepNumber) {
+        document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+        document.getElementById('step' + stepNumber).classList.add('active');
+    }
+
+    function selectDomain(domain) {
+        selection.domain = domain;
+        document.getElementById('display-domain').innerText = domain;
+        
+        // Générer les boutons de marques dynamiquement
+        const brandContainer = document.getElementById('brand-buttons');
+        brandContainer.innerHTML = '';
+        data[domain].forEach(brand => {
+            const btn = document.createElement('button');
+            btn.innerText = brand;
+            btn.onclick = () => selectBrand(brand);
+            brandContainer.appendChild(btn);
+        });
+        nextStep(3);
+    }
+
+    function selectBrand(brand) {
+        selection.brand = brand;
+        document.getElementById('display-brand').innerText = brand;
+        nextStep(4);
+    }
+
+    function selectYear(year) {
+        selection.year = year;
+        document.getElementById('display-year').innerText = year;
+        
+        // Simuler une liste de fichiers
+        const fileList = document.getElementById('file-list');
+        fileList.innerHTML = `
+            <li class="file-item">📄 Catalogue_${selection.brand}_${year}.pdf <span class="status">📥 Télécharger</span></li>
+            <li class="file-item">📄 Tarif_Public_${year}.pdf <span class="status">📥 Télécharger</span></li>
+        `;
+        nextStep(5);
+    }
+</script>
+
+</body>
+</html>
