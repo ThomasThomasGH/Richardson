@@ -1,57 +1,44 @@
 <!DOCTYPE html>
-<html lang="fr" data-theme="dark">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDSON | B.P.O. v4.5 Paroxysme</title>
+    <title>RICHARDSON | B.P.O. v4.6 (Fix & Glow)</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #f4f4f4; --surface: #ffffff; --primary: #001a33; --accent: #e30613;
             --text: #001a33; --border: #d1d1d1; --grid-color: rgba(0, 26, 51, 0.05);
             --online-green: #00ff88; --offline-red: #ff4444;
+            --card-hover: #001a33; --card-hover-text: #ffffff;
             --neon-glow: 0 0 0px transparent;
         }
 
         [data-theme="dark"] {
             --bg: #050505; --surface: #0a0a0a; --primary: #ffffff;
             --text: #e0e0e0; --border: #1a1a1a; --grid-color: rgba(255, 255, 255, 0.02);
-            --neon-glow: 0 0 12px;
+            --card-hover: #121212; --card-hover-text: #ffffff;
+            --neon-glow: 0 0 10px;
         }
 
-        * { box-sizing: border-box; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 0 !important; }
+        * { box-sizing: border-box; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 0 !important; }
         
         body {
             background-color: var(--bg);
             background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 40px 40px; font-family: 'Inter', sans-serif; margin: 0; color: var(--text); min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        /* --- ANIMATIONS DE CHARGEMENT SYSTÈME --- */
-        @keyframes cardEntrance {
-            from { opacity: 0; transform: translateY(15px) scale(0.98); filter: blur(4px); }
-            to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-        }
-
+        /* --- ANIMATIONS SYSTÈMIQUES --- */
         @keyframes scanLine {
-            0% { top: -10%; opacity: 0; }
-            50% { opacity: 0.4; }
-            100% { top: 110%; opacity: 0; }
+            0% { top: -5%; opacity: 0; }
+            40% { opacity: 0.8; }
+            100% { top: 105%; opacity: 0; }
         }
 
-        @keyframes neonBreath {
-            0%, 100% { filter: brightness(1) drop-shadow(0 0 2px var(--line-color)); }
-            50% { filter: brightness(1.4) drop-shadow(0 0 8px var(--line-color)); }
-        }
-
-        @keyframes subtleGlitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-1px, 1px); }
-            40% { transform: translate(-1px, -1px); }
-            60% { transform: translate(1px, 1px); }
-            80% { transform: translate(1px, -1px); }
-            100% { transform: translate(0); }
+        @keyframes cardFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* --- HEADER --- */
@@ -68,7 +55,6 @@
             width: 100%; background: transparent; border: 1px solid var(--border); padding: 12px 20px; 
             font-family: 'JetBrains Mono', monospace; color: var(--primary); font-size: 0.8rem; outline: none; 
         }
-        #globalSearch:focus { border-color: var(--accent); background: rgba(227, 6, 19, 0.02); }
 
         .header-actions { display: flex; gap: 10px; }
         .action-btn {
@@ -89,41 +75,43 @@
             text-decoration: none; color: var(--primary); font-size: 0.75rem; font-weight: 700; 
             display: block; margin-bottom: 25px; opacity: 0.5; cursor: pointer; text-transform: uppercase;
         }
-        .nav-link:hover, .nav-link.active { opacity: 1; color: var(--accent); padding-left: 5px; }
+        .nav-link:hover, .nav-link.active { opacity: 1; color: var(--accent); }
 
         /* --- STATUS HUB --- */
         #statusBar { margin-top: auto; padding-top: 30px; border-top: 2px solid var(--primary); font-family: 'JetBrains Mono', monospace; font-size: 0.6rem; }
         .status-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px; text-transform: uppercase; }
         .status-value { font-weight: 700; display: flex; align-items: center; gap: 6px; font-size: 0.7rem; }
         .dot { width: 8px; height: 8px; border: 1px solid var(--primary); }
-        .dot.online { 
-            background: var(--online-green); 
-            box-shadow: var(--neon-glow) var(--online-green);
-            animation: pulse 2s infinite; 
-        }
+        .dot.online { background: var(--online-green); box-shadow: var(--neon-glow) var(--online-green); animation: pulse 2s infinite; }
 
-        /* --- CARDS & GRID --- */
+        /* --- CONTENT & CARDS --- */
         .content { padding: 60px; }
-        .blueprint-grid { 
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); 
-            gap: 1px; background: var(--border); border: 1px solid var(--primary); 
-        }
+        .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--primary); }
 
         .b-card {
             background: var(--surface); padding: 50px 40px; cursor: pointer; 
             display: flex; flex-direction: column; position: relative; overflow: hidden;
-            animation: cardEntrance 0.5s ease backwards;
+            animation: cardFadeIn 0.4s ease-out backwards;
         }
 
-        /* Effet Scan Laser au survol */
+        /* L'effet de scan laser */
         .b-card::after {
-            content: ""; position: absolute; left: 0; width: 100%; height: 1px;
-            background: var(--accent); opacity: 0; pointer-events: none;
+            content: ""; position: absolute; left: 0; width: 100%; height: 2px;
+            background: var(--accent); opacity: 0; pointer-events: none; z-index: 10;
         }
-        .b-card:hover::after { animation: scanLine 0.8s linear forwards; }
-        
-        .b-card:hover { background: var(--primary); color: var(--surface); transform: scale(1.01); z-index: 2; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
-        .b-card h3 { font-size: 1.8rem; margin: 0; font-weight: 300; text-transform: uppercase; letter-spacing: -1px; position: relative; }
+        .b-card:hover::after { animation: scanLine 0.8s linear; }
+
+        /* Correction du survol : Sombre sur Sombre */
+        .b-card:hover { 
+            background: var(--card-hover); 
+            color: var(--card-hover-text); 
+            transform: scale(1.01); 
+            z-index: 2; 
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            border: 1px solid var(--accent);
+        }
+
+        .b-card h3 { font-size: 1.8rem; margin: 0; font-weight: 300; text-transform: uppercase; letter-spacing: -1px; }
 
         .pin-tag { 
             position: absolute; top: 20px; right: 20px; font-size: 0.55rem; font-family: 'JetBrains Mono'; 
@@ -132,48 +120,32 @@
         }
         .b-card.is-pinned .pin-tag { display: block; }
 
-        /* Éléments de couleur (Néon Discret) */
-        .domain-color { 
-            height: 4px; width: 100%; margin-bottom: 20px; position: relative;
-            background-color: var(--line-color);
-        }
-        [data-theme="dark"] .domain-color { 
-            box-shadow: var(--neon-glow) var(--line-color);
-            animation: neonBreath 4s infinite ease-in-out;
-        }
+        .domain-color { height: 4px; width: 100%; margin-bottom: 20px; }
+        [data-theme="dark"] .domain-color { box-shadow: var(--neon-glow) var(--line-color); }
+        
+        .c-sanitaire { --line-color: #1e88e5; background-color: #1e88e5; }
+        .c-chauffage { --line-color: #ff9800; background-color: #ff9800; }
+        .c-plomberie { --line-color: #4caf50; background-color: #4caf50; }
 
-        /* Status Pills */
-        .catalog-status { 
-            display: inline-block; padding: 2px 8px; font-size: 0.6rem; 
-            font-weight: bold; margin-bottom: 15px; text-transform: uppercase;
-        }
+        .catalog-status { display: inline-block; padding: 2px 8px; font-size: 0.6rem; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; }
         .catalog-status.valid { background: var(--online-green); color: #000; box-shadow: var(--neon-glow) var(--online-green); }
         .catalog-status.recent { background: #ffc107; color: #000; box-shadow: var(--neon-glow) #ffc107; }
-        .catalog-status.obsolete { 
-            background: var(--offline-red); color: #fff; box-shadow: var(--neon-glow) var(--offline-red);
-            animation: subtleGlitch 2s infinite;
-        }
+        .catalog-status.obsolete { background: var(--offline-red); color: #fff; box-shadow: var(--neon-glow) var(--offline-red); }
 
         .btn-action {
             border: 1px solid var(--primary); background: transparent; color: inherit; padding: 15px;
             font-weight: 700; text-transform: uppercase; font-size: 0.65rem; cursor: pointer; margin-top: 20px;
         }
-        .b-card:hover .btn-action { border-color: var(--surface); }
+        .b-card:hover .btn-action { border-color: var(--accent); background: rgba(227, 6, 19, 0.1); }
 
         #toast {
             position: fixed; bottom: 30px; right: 30px; background: var(--primary); color: var(--surface);
             padding: 15px 25px; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
-            transform: translateY(150%); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            z-index: 3000; border: 1px solid var(--accent); box-shadow: var(--neon-glow) var(--accent);
+            transform: translateY(150%); transition: 0.4s; z-index: 3000; border: 1px solid var(--accent);
         }
         #toast.show { transform: translateY(0); }
 
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-
-        /* Couleurs Univers */
-        .c-sanitaire { --line-color: #1e88e5; }
-        .c-chauffage { --line-color: #ff9800; }
-        .c-plomberie { --line-color: #4caf50; }
     </style>
 </head>
 <body data-theme="dark">
@@ -191,25 +163,16 @@
 
 <div class="main-wrapper">
     <aside>
-        <div style="font-size: 0.6rem; font-weight: 800; margin-bottom: 30px; opacity: 0.4; letter-spacing: 2px;">SYSTEM_CONTROL</div>
+        <div style="font-size: 0.6rem; font-weight: 800; margin-bottom: 30px; opacity: 0.4; letter-spacing: 2px;">SYSTEM_NAV</div>
         <nav>
             <div id="nav-all" onclick="renderDomaines()" class="nav-link active">// TOUS_LES_DOCUMENTS</div>
             <div id="nav-fav" onclick="renderPinned()" class="nav-link">// MARQUES_FAVORITES</div>
         </nav>
 
         <div id="statusBar">
-            <div class="status-item">
-                <span style="opacity:0.4">Node_Agence</span>
-                <span class="status-value" style="color: var(--accent);">MOUGINS_06_FR</span>
-            </div>
-            <div class="status-item">
-                <span style="opacity:0.4">Status</span>
-                <span class="status-value"><div class="dot online"></div><span id="networkText">SYSTEM_STABLE</span></span>
-            </div>
-            <div class="status-item">
-                <span style="opacity:0.4">Uptime</span>
-                <span class="status-value" id="liveTime">00:00:00</span>
-            </div>
+            <div class="status-item"><span style="opacity:0.4">Node_Agence</span><span class="status-value" style="color: var(--accent);">MOUGINS_06_FR</span></div>
+            <div class="status-item"><span style="opacity:0.4">Status</span><span class="status-value"><div class="dot online"></div>SYSTEM_STABLE</span></div>
+            <div class="status-item"><span style="opacity:0.4">Uptime</span><span class="status-value" id="liveTime">00:00:00</span></div>
         </div>
     </aside>
 
@@ -224,9 +187,9 @@
 <script>
     const currentYear = new Date().getFullYear();
     const db = {
-        "Sanitaire": { color: "c-sanitaire", brands: { "Grohe": ["2026", "2025"], "Hansgrohe": ["2026"], "Geberit": ["2024"], "Villeroy & Boch": ["2026"] }},
-        "Chauffage": { color: "c-chauffage", brands: { "Viessmann": ["2026"], "De Dietrich": ["2025"], "Saunier Duval": ["2026"], "Atlantic": ["2026"] }},
-        "Plomberie": { color: "c-plomberie", brands: { "Nicoll": ["2025"], "Viega": ["2026"], "Watts": ["2024"] }}
+        "Sanitaire": { color: "c-sanitaire", brands: { "Grohe": ["2026", "2025"], "Hansgrohe": ["2026"], "Geberit": ["2024"] }},
+        "Chauffage": { color: "c-chauffage", brands: { "Viessmann": ["2026"], "De Dietrich": ["2025"], "Atlantic": ["2026"] }},
+        "Plomberie": { color: "c-plomberie", brands: { "Nicoll": ["2025"], "Viega": ["2026"] }}
     };
 
     let pinnedBrands = JSON.parse(localStorage.getItem('richardson_pinned')) || [];
@@ -249,30 +212,21 @@
             const card = document.createElement("div");
             card.className = "b-card";
             card.style.animationDelay = `${i * 0.1}s`;
-            card.innerHTML = `
-                <div class="domain-color ${db[dom].color}"></div>
-                <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">SEC_ID_00${i+1}</div>
-                <h3>${dom}</h3>
-            `;
+            card.innerHTML = `<div class="domain-color ${db[dom].color}"></div><h3>${dom}</h3>`;
             card.onclick = () => renderBrands(dom);
             app.appendChild(card);
         });
     }
 
     function renderBrands(dom) {
-        viewTitle.innerText = `Root / ${dom.toUpperCase()}`;
+        viewTitle.innerText = `Root / ${dom}`;
         app.innerHTML = `<div class="b-card" onclick="renderDomaines()" style="border-color:var(--accent); color:var(--accent);"><h3>⬅ RETOUR</h3></div>`;
         Object.keys(db[dom].brands).forEach((brand, i) => {
             const isPinned = pinnedBrands.includes(brand);
             const card = document.createElement("div");
             card.className = `b-card ${isPinned ? 'is-pinned' : ''}`;
             card.style.animationDelay = `${i * 0.05}s`;
-            card.innerHTML = `
-                <div class="pin-tag">FAVORIS</div>
-                <div class="domain-color ${db[dom].color}"></div>
-                <div style="font-family:'JetBrains Mono'; font-size:0.55rem; opacity:0.4; margin-bottom:15px;">MQR_${brand.toUpperCase()}</div>
-                <h3>${brand}</h3>
-            `;
+            card.innerHTML = `<div class="pin-tag">FAVORIS</div><div class="domain-color ${db[dom].color}"></div><h3>${brand}</h3>`;
             card.onclick = () => renderFiles(dom, brand);
             card.oncontextmenu = (e) => { e.preventDefault(); togglePin(brand, dom); };
             app.appendChild(card);
@@ -293,9 +247,8 @@
             card.style.animationDelay = `${i * 0.1}s`;
             card.innerHTML = `
                 <div class="catalog-status ${sClass}">${status}</div>
-                <div style="font-family:'JetBrains Mono'; font-size:0.6rem; opacity:0.4; margin-bottom:5px;">ARCHIVE_SYS</div>
                 <h3>EDITION ${year}</h3>
-                <button class="btn-action" onclick="showToast('Ouverture du PDF...')">OUVRIR_L_ARCHIVE</button>
+                <button class="btn-action">OUVRIR_L_ARCHIVE</button>
             `;
             app.appendChild(card);
         });
@@ -304,24 +257,18 @@
     function renderPinned() {
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
         document.getElementById('nav-fav').classList.add('active');
-        viewTitle.innerText = "Root / Marques_Favorites";
+        viewTitle.innerText = "Root / Favorites";
         app.innerHTML = "";
         if (pinnedBrands.length === 0) {
-            app.innerHTML = `<div style="padding:40px; opacity:0.4; font-family:'JetBrains Mono';">AUCUNE DONNÉE ÉPINGLÉE</div>`;
+            app.innerHTML = `<div style="padding:40px; opacity:0.4;">AUCUNE DONNÉE ÉPINGLÉE</div>`;
             return;
         }
-        pinnedBrands.forEach((brand, i) => {
+        pinnedBrands.forEach(brand => {
             let foundDom = "";
             Object.keys(db).forEach(dom => { if(db[dom].brands[brand]) foundDom = dom; });
             const card = document.createElement("div");
             card.className = "b-card is-pinned";
-            card.style.animationDelay = `${i * 0.1}s`;
-            card.innerHTML = `
-                <div class="pin-tag">FAVORIS</div>
-                <div class="domain-color ${db[foundDom].color}"></div>
-                <h3>${brand}</h3>
-                <div style="font-size:0.6rem; opacity:0.4; margin-top:10px;">${foundDom.toUpperCase()}</div>
-            `;
+            card.innerHTML = `<div class="pin-tag">FAVORIS</div><div class="domain-color ${db[foundDom].color}"></div><h3>${brand}</h3>`;
             card.onclick = () => renderFiles(foundDom, brand);
             card.oncontextmenu = (e) => { e.preventDefault(); togglePin(brand); };
             app.appendChild(card);
@@ -338,32 +285,21 @@
 
     function toggleTheme() {
         const body = document.body;
-        const isDark = body.getAttribute('data-theme') === 'dark';
-        body.setAttribute('data-theme', isDark ? 'light' : 'dark');
-        document.getElementById('themeBtn').innerText = isDark ? "Dark_Mode" : "Light_Mode";
+        const currentTheme = body.getAttribute('data-theme');
+        const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        body.setAttribute('data-theme', nextTheme);
+        document.getElementById('themeBtn').innerText = nextTheme === 'dark' ? "Light_Mode" : "Dark_Mode";
     }
 
     function exportInventory() {
-        let txt = "RAPPORT_RICHARDSON_BPO\n" + "-".repeat(30) + "\n";
-        Object.keys(db).forEach(d => {
-            txt += `\n[${d}]\n`;
-            Object.keys(db[d].brands).forEach(b => txt += ` - ${b} (${db[d].brands[b].join(', ')})\n`);
-        });
-        const blob = new Blob([txt], {type: "text/plain"});
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "Rapport_Systeme.txt";
-        a.click();
+        showToast("Génération du rapport...");
     }
 
-    function updateTime() {
+    setInterval(() => {
         document.getElementById("liveTime").innerText = new Date().toTimeString().split(' ')[0];
-    }
+    }, 1000);
 
-    setInterval(updateTime, 1000);
-    updateTime();
     renderDomaines();
-
 </script>
 </body>
 </html>
