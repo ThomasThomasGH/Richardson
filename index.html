@@ -11,7 +11,7 @@
             --text: #001a33; --border: #d1d1d1; --grid-color: rgba(0, 26, 51, 0.05);
             --online-green: #00ff88; --offline-red: #ff4444;
             --card-hover: #001a33; --card-hover-text: #ffffff;
-            --glow-power: 0px; --ai-panel-w: 380px;
+            --glow-power: 10px; --ai-panel-w: 380px; /* Glow réactivé */
         }
 
         [data-theme="dark"] {
@@ -33,7 +33,17 @@
 
         /* Animations */
         @keyframes scanLine { 0% { top: -10%; opacity: 0; } 40% { opacity: 1; } 100% { top: 110%; opacity: 0; } }
-        @keyframes pulseNeon { 50% { filter: brightness(1.2); box-shadow: 0 0 10px var(--online-green); } }
+        @keyframes pulseNeon { 50% { filter: brightness(1.2); box-shadow: 0 0 var(--glow-power) var(--online-green); } }
+        
+        /* Nouvelle animation de vibration pour Obsolete */
+        @keyframes vibrate {
+            0% { transform: translate(0); }
+            20% { transform: translate(-1px, 1px); }
+            40% { transform: translate(-1px, -1px); }
+            60% { transform: translate(1px, 1px); }
+            80% { transform: translate(1px, -1px); }
+            100% { transform: translate(0); }
+        }
 
         /* UI */
         header {
@@ -68,14 +78,24 @@
         .b-card::after { content: ""; position: absolute; left: 0; width: 100%; height: 2px; background: #fff; opacity: 0; }
         .b-card:hover::after { animation: scanLine 1s linear infinite; opacity: 1; }
 
+        /* --- NEON GLOW EFFECTS --- */
         .domain-color { height: 4px; width: 40px; margin-bottom: 20px; }
-        .c-sanitaire { background-color: #1e88e5; }
-        .c-chauffage { background-color: #ff9800; }
-        .c-plomberie { background-color: #4caf50; }
+        .c-sanitaire { background-color: #1e88e5; box-shadow: 0 0 var(--glow-power) #1e88e5; }
+        .c-chauffage { background-color: #ff9800; box-shadow: 0 0 var(--glow-power) #ff9800; }
+        .c-plomberie { background-color: #4caf50; box-shadow: 0 0 var(--glow-power) #4caf50; }
 
-        .catalog-status { align-self: flex-start; padding: 4px 8px; font-size: 0.6rem; font-weight: 800; margin-bottom: 15px; }
-        .valid { background: var(--online-green); color: #000; }
-        .obsolete { background: var(--offline-red); color: #fff; }
+        .catalog-status { align-self: flex-start; padding: 4px 8px; font-size: 0.6rem; font-weight: 800; margin-bottom: 15px; text-transform: uppercase; }
+        
+        .valid { 
+            background: var(--online-green); color: #000; 
+            box-shadow: 0 0 var(--glow-power) var(--online-green); /* Glow sur Valide */
+        }
+        
+        .obsolete { 
+            background: var(--offline-red); color: #fff; 
+            box-shadow: 0 0 var(--glow-power) var(--offline-red); /* Glow sur Obsolete */
+            animation: vibrate 0.3s linear infinite; /* Vibration activée */
+        }
 
         .btn-open {
             margin-top: auto; background: transparent; border: 1px solid var(--primary); color: inherit;
