@@ -3,242 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Archivage des Catalogues</title>
+    <title>Outil d'Archivage des Catalogues</title>
     <style>
-        /* CSS */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background-color: #f4f6f9;
+        /* --- CSS : Design & Expérience Utilisateur --- */
+        :root {
+            --primary: #1e293b;
+            --accent: #3b82f6;
+            --bg: #f8fafc;
+            --green: #22c55e;
+            --orange: #f97316;
+            --red: #ef4444;
+            --white: #ffffff;
         }
 
-        header {
-            background-color: #1e293b;
-            color: white;
-            padding: 20px;
-            text-align: center;
+        body { font-family: 'Inter', system-ui, sans-serif; background-color: var(--bg); margin: 0; color: #1e293b; }
+        header { background: var(--primary); color: white; padding: 1.5rem; text-align: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        
+        #app { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+        
+        .card { 
+            background: var(--white); padding: 1.5rem; border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer;
+            transition: all 0.2s ease; border: 1px solid #e2e8f0;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 1.1rem; min-height: 80px; text-align: center;
         }
+        .card:hover { transform: translateY(-3px); border-color: var(--accent); color: var(--accent); box-shadow: 0 10px 15px rgba(0,0,0,0.1); }
 
-        #app {
-            padding: 30px;
-            max-width: 900px;
-            margin: auto;
-        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
 
-        .card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: 0.2s;
-        }
+        /* Styles de statut (Couleurs) */
+        .status-card { color: white; display: flex; flex-direction: column; gap: 0.5rem; cursor: pointer; border-radius: 8px; padding: 1rem; }
+        .green { background-color: var(--green); }
+        .orange { background-color: var(--orange); }
+        .red { background-color: var(--red); }
 
-        .card:hover {
-            transform: translateY(-3px);
-        }
+        .warning-text { font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 5px; border-radius: 4px; font-weight: normal; margin-top: 5px; }
 
-        .catalog-item {
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 6px;
-            color: white;
-            font-weight: bold;
+        .btn-back { 
+            background: #64748b; color: white; border: none; padding: 0.6rem 1.2rem; 
+            border-radius: 6px; cursor: pointer; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
         }
+        .btn-back:hover { background: #475569; }
 
-        .green {
-            background-color: #16a34a;
-        }
-
-        .orange {
-            background-color: #f97316;
-        }
-
-        .red {
-            background-color: #dc2626;
-        }
-
-        .warning {
-            background: #fff3cd;
-            color: #856404;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-weight: normal;
-        }
-
-        button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-
-        .back-btn {
-            background-color: #334155;
-            color: white;
-            margin-bottom: 20px;
-        }
+        h2 { border-left: 4px solid var(--accent); padding-left: 1rem; margin-bottom: 1.5rem; }
     </style>
 </head>
 <body>
-    <!-- HTML -->
-    <header>
-        <h1>📚 Archivage des Catalogues</h1>
-    </header>
 
-    <main id="app">
-        <!-- Contenu dynamique injecté ici -->
-    </main>
+<header>
+    <h1>📚 Archivage des Catalogues</h1>
+</header>
 
-    <script>
-        // JavaScript
+<div id="app">
+    </div>
 
-        // =======================
-        // BASE DE DONNÉES SIMPLIFIÉE
-        // =======================
-        const catalogues = {
-            sanitaire: {
-                grohe: ["2023", "2024", "2025"],
-                hansgrohe: ["2024", "2025"]
-            },
-            chauffage: {
-                viessmann: ["2024", "2025"]
-            },
-            plomberie: {
-                viega: ["2023", "2024"]
-            }
+<script>
+/* ============================================================
+   1. BASE DE DONNÉES (À modifier pour ajouter des marques)
+   ============================================================ */
+const cataloguesData = {
+    "Sanitaire": {
+        "Grohe": ["2023", "2024", "2025"],
+        "Hansgrohe": ["2024", "2025"],
+        "Geberit": ["2022", "2024"]
+    },
+    "Chauffage": {
+        "Viessmann": ["2024", "2025"],
+        "De Dietrich": ["2023", "2025"],
+        "Saunier Duval": ["2024"]
+    },
+    "Plomberie": {
+        "Nicoll": ["2023", "2024"],
+        "Viega": ["2024", "2025"]
+    }
+};
+
+/* ============================================================
+   2. LOGIQUE MÉTIER & ÉTAT
+   ============================================================ */
+let state = { domaine: null, marque: null };
+
+function getStatus(year) {
+    const currentYear = new Date().getFullYear();
+    const currentMonth = new Date().getMonth(); // 0 = Janvier, 11 = Décembre
+
+    const selectedYear = parseInt(year);
+
+    // Règle 1 : Si l'année est passée -> ROUGE
+    if (selectedYear < currentYear) return "red";
+
+    // Règle 2 : Si c'est l'année en cours
+    if (selectedYear === currentYear) {
+        // Moins de 6 mois (Janvier à Juin inclus) -> VERT
+        if (currentMonth < 6) return "green";
+        // Plus de 6 mois (Juillet à Décembre) -> ORANGE
+        else return "orange";
+    }
+
+    // Règle 3 : Année future -> VERT (nouveau catalogue)
+    return "green";
+}
+
+/* ============================================================
+   3. MOTEUR DE RENDU (L'interface dynamique)
+   ============================================================ */
+const app = document.getElementById("app");
+
+function renderDomaines() {
+    app.innerHTML = `<h2>1. Sélectionnez un Domaine</h2>`;
+    const grid = document.createElement("div");
+    grid.className = "grid";
+
+    Object.keys(cataloguesData).forEach(domaine => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerText = domaine;
+        card.onclick = () => { state.domaine = domaine; renderMarques(); };
+        grid.appendChild(card);
+    });
+    app.appendChild(grid);
+}
+
+function renderMarques() {
+    app.innerHTML = `<button class="btn-back" onclick="renderDomaines()">⬅ Retour aux Domaines</button>`;
+    app.innerHTML += `<h2>2. Marques : ${state.domaine}</h2>`;
+    
+    const grid = document.createElement("div");
+    grid.className = "grid";
+
+    Object.keys(cataloguesData[state.domaine]).forEach(marque => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerText = marque;
+        card.onclick = () => { state.marque = marque; renderAnnees(); };
+        grid.appendChild(card);
+    });
+    app.appendChild(grid);
+}
+
+function renderAnnees() {
+    app.innerHTML = `<button class="btn-back" onclick="renderMarques()">⬅ Retour aux Marques</button>`;
+    app.innerHTML += `<h2>3. Choisir l'édition (${state.marque})</h2>`;
+    
+    const grid = document.createElement("div");
+    grid.className = "grid";
+
+    cataloguesData[state.domaine][state.marque].forEach(year => {
+        const status = getStatus(year);
+        const card = document.createElement("div");
+        card.className = `status-card ${status}`;
+        
+        let warningHTML = (status === "red") ? `<div class="warning-text">⚠ Attention : Validité à confirmer avec le fournisseur !</div>` : "";
+        
+        card.innerHTML = `<strong>Édition ${year}</strong> ${warningHTML}`;
+        
+        // Action : Simule l'ouverture d'un PDF
+        card.onclick = () => {
+            alert(`Ouverture du PDF : catalogues/${state.domaine.toLowerCase()}/${state.marque.toLowerCase()}/${year}/catalogue.pdf`);
+            // Pour un vrai lien : window.open(`catalogues/${state.domaine}/${state.marque}/${year}/catalogue.pdf`, '_blank');
         };
+        grid.appendChild(card);
+    });
+    app.appendChild(grid);
+}
 
-        // =======================
-        // STATE
-        // =======================
-        const state = {
-            domaine: null,
-            marque: null
-        };
+// Lancement initial
+renderDomaines();
 
-        // =======================
-        // INIT
-        // =======================
-        renderDomaines();
-
-        // =======================
-        // FONCTION STATUT
-        // =======================
-        function getStatus(year) {
-            const currentYear = new Date().getFullYear();
-            const currentMonth = new Date().getMonth(); // 0-11
-
-            if (year < currentYear) {
-                return "red";
-            }
-
-            if (year == currentYear) {
-                if (currentMonth < 6) {
-                    return "green";
-                } else {
-                    return "orange";
-                }
-            }
-
-            return "green";
-        }
-
-        // =======================
-        // RENDER DOMAINES
-        // =======================
-        function renderDomaines() {
-            const app = document.getElementById("app");
-            app.innerHTML = "<h2>Choisissez un domaine</h2>";
-
-            Object.keys(catalogues).forEach(domaine => {
-                const div = document.createElement("div");
-                div.className = "card";
-                div.textContent = domaine.toUpperCase();
-                div.onclick = () => {
-                    state.domaine = domaine;
-                    renderMarques();
-                };
-                app.appendChild(div);
-            });
-        }
-
-        // =======================
-        // RENDER MARQUES
-        // =======================
-        function renderMarques() {
-            const app = document.getElementById("app");
-            app.innerHTML = "";
-
-            addBackButton(renderDomaines);
-
-            const title = document.createElement("h2");
-            title.textContent = "Choisissez une marque";
-            app.appendChild(title);
-
-            Object.keys(catalogues[state.domaine]).forEach(marque => {
-                const div = document.createElement("div");
-                div.className = "card";
-                div.textContent = marque.toUpperCase();
-                div.onclick = () => {
-                    state.marque = marque;
-                    renderAnnees();
-                };
-                app.appendChild(div);
-            });
-        }
-
-        // =======================
-        // RENDER ANNÉES
-        // =======================
-        function renderAnnees() {
-            const app = document.getElementById("app");
-            app.innerHTML = "";
-
-            addBackButton(renderMarques);
-
-            const title = document.createElement("h2");
-            title.textContent = "Choisissez une année";
-            app.appendChild(title);
-
-            catalogues[state.domaine][state.marque].forEach(year => {
-                const status = getStatus(parseInt(year));
-
-                const div = document.createElement("div");
-                div.className = `catalog-item ${status}`;
-                div.innerHTML = `Catalogue ${year}`;
-
-                if (status === "red") {
-                    const warning = document.createElement("div");
-                    warning.className = "warning";
-                    warning.textContent = "⚠ Attention validité à confirmer avec le fournisseur !";
-                    div.appendChild(warning);
-                }
-
-                div.onclick = () => {
-                    alert(`Ouverture du catalogue ${year} (${state.marque})`);
-                };
-
-                app.appendChild(div);
-            });
-        }
-
-        // =======================
-        // BOUTON RETOUR
-        // =======================
-        function addBackButton(callback) {
-            const app = document.getElementById("app");
-
-            const backBtn = document.createElement("button");
-            backBtn.textContent = "⬅ Retour";
-            backBtn.className = "back-btn";
-            backBtn.onclick = callback;
-
-            app.appendChild(backBtn);
-        }
-    </script>
+</script>
 </body>
 </html>
