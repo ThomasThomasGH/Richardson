@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RICHARDSON | TECHNICAL BLUEPRINT v3.2</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <title>RICHARDSON | ARCHIVE TECHNIQUE v3.3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg: #f4f4f4;
@@ -20,7 +20,7 @@
 
         [data-theme="dark"] {
             --bg: #0a0a0a;
-            --surface: #111111;
+            --surface: #151515;
             --primary: #ffffff;
             --text: #e0e0e0;
             --border: #333333;
@@ -31,9 +31,7 @@
         
         body { 
             background-color: var(--bg);
-            background-image: 
-                linear-gradient(var(--grid-color) 1px, transparent 1px),
-                linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+            background-image: linear-gradient(var(--grid-color) 1px, transparent 1px), linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
             background-size: 40px 40px;
             font-family: 'Inter', sans-serif;
             margin: 0; 
@@ -41,75 +39,46 @@
             min-height: 100vh;
         }
 
+        /* --- HEADER --- */
         header {
             height: 80px; background: var(--surface); border-bottom: 2px solid var(--primary);
             display: flex; align-items: center; padding: 0 40px; position: sticky; top: 0; z-index: 1000;
         }
 
-        .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: 4px; text-decoration: none; color: var(--primary); }
-        .search-container { flex-grow: 1; margin-left: 60px; }
+        .logo { font-weight: 900; font-size: 1.5rem; letter-spacing: 4px; text-decoration: none; color: var(--primary); flex-shrink: 0; }
+        .search-container { flex-grow: 1; margin: 0 40px; }
         #globalSearch { width: 100%; background: transparent; border: 1px solid var(--border); padding: 12px 20px; font-family: 'JetBrains Mono', monospace; color: var(--primary); font-size: 0.8rem; }
 
-        .main-wrapper { 
-            display: grid; 
-            grid-template-columns: 300px 1fr; 
-            min-height: calc(100vh - 80px); 
+        .header-actions { display: flex; gap: 10px; }
+        .action-btn { 
+            background: var(--primary); color: var(--surface); border: none; padding: 10px 15px; 
+            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; font-weight: 700; cursor: pointer; text-transform: uppercase;
         }
+        .action-btn:hover { background: var(--accent); color: white; }
 
-        /* --- COLONNE GAUCHE (ASIDE) --- */
+        /* --- LAYOUT --- */
+        .main-wrapper { display: grid; grid-template-columns: 300px 1fr; min-height: calc(100vh - 80px); }
+
         aside { 
-            border-right: 1px solid var(--border); 
-            background: var(--surface); 
-            padding: 40px;
-            display: flex;
-            flex-direction: column; /* Permet de pousser le contenu en bas */
-            position: sticky;
-            top: 80px;
-            height: calc(100vh - 80px);
+            border-right: 1px solid var(--border); background: var(--surface); padding: 40px;
+            display: flex; flex-direction: column; position: sticky; top: 80px; height: calc(100vh - 80px);
         }
 
-        .nav-section-title {
-            font-size: 0.7rem; 
-            font-weight: 800; 
-            margin-bottom: 20px; 
-            opacity: 0.4;
-            letter-spacing: 1px;
-        }
+        .nav-link { text-decoration: none; color: var(--primary); font-size: 0.85rem; font-weight: 700; display: block; margin-bottom: 20px; }
 
-        .nav-link {
-            text-decoration: none; 
-            color: var(--primary); 
-            font-size: 0.85rem; 
-            font-weight: 700;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        /* --- HUB DE STATUT (EN BAS DE L'ASIDE) --- */
+        /* --- STATUS BAR (BAS GAUCHE) --- */
         #statusBar {
-            margin-top: auto; /* Pousse l'élément tout en bas de la colonne */
-            padding-top: 30px;
-            border-top: 1px solid var(--border);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
+            margin-top: auto; padding-top: 30px; border-top: 1px solid var(--border);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;
         }
-
-        .status-item { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 4px; 
-            margin-bottom: 15px;
-            text-transform: uppercase; 
-        }
-
+        .status-item { display: flex; flex-direction: column; gap: 4px; margin-bottom: 15px; text-transform: uppercase; }
         .status-label { opacity: 0.5; font-size: 0.6rem; }
         .status-value { font-weight: 700; display: flex; align-items: center; gap: 6px; }
-
         .dot { width: 7px; height: 7px; display: inline-block; }
-        .dot.online { background: var(--online-green); box-shadow: 0 0 8px var(--online-green); }
+        .dot.online { background: var(--online-green); box-shadow: 0 0 8px var(--online-green); animation: pulse 2s infinite; }
         .dot.offline { background: var(--offline-red); box-shadow: 0 0 8px var(--offline-red); }
 
-        /* --- GRILLE PRINCIPALE --- */
+        /* --- MAIN CONTENT --- */
         .content { padding: 60px; }
         .blueprint-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--primary); }
         .b-card { background: var(--surface); padding: 40px; cursor: pointer; display: flex; flex-direction: column; }
@@ -118,37 +87,46 @@
 
         .btn-open { border: 1px solid var(--primary); background: transparent; color: inherit; padding: 15px; font-weight: 700; text-transform: uppercase; font-size: 0.7rem; cursor: pointer; margin-top: 20px;}
 
-        /* Modal */
-        #detailsModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2000; justify-content: center; align-items: center; }
-        .modal-box { background: var(--surface); width: 90%; max-width: 600px; padding: 60px; border: 1px solid var(--primary); color: var(--primary); }
+        /* --- MODALS --- */
+        .modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.95); z-index: 2000; justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-box { 
+            background: var(--surface); width: 100%; max-width: 600px; padding: 60px; 
+            border: 1px solid var(--primary); color: var(--primary); position: relative;
+        }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
-        .online { animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
 <header>
-    <a href="#" class="logo">RICHARDSON</a>
+    <a href="#" class="logo" onclick="location.reload()">RICHARDSON</a>
     <div class="search-container">
-        <input type="text" id="globalSearch" placeholder="SEARCH_ENGINE_v3.2 // IDENTIFIER_CATALOGUE_REQUIS...">
+        <input type="text" id="globalSearch" placeholder="CMD_RECHERCHE // IDENTIFIER_MARQUE_OU_ANNEE...">
+    </div>
+    <div class="header-actions">
+        <button class="action-btn" onclick="toggleTheme()">Dark_Mode</button>
+        <button class="action-btn" onclick="toggleHelp()">[ ? ] Aide</button>
     </div>
 </header>
 
 <div class="main-wrapper">
     <aside>
-        <div class="nav-section-title">MENU_NAVIGATION</div>
+        <div style="font-size: 0.7rem; font-weight: 800; margin-bottom: 20px; opacity: 0.4;">INDEX_ARCHIVE</div>
         <nav>
-            <a href="#" onclick="renderDomaines()" class="nav-link">// UNIVERS_INDEX</a>
+            <a href="#" onclick="renderDomaines()" class="nav-link">// TOUS_LES_UNIVERS</a>
         </nav>
 
         <div id="statusBar">
             <div class="status-item">
                 <span class="status-label">Localisation_Agence</span>
-                <span class="status-value" style="color: var(--accent);">MOUGINS_FR_06</span>
+                <span class="status-value" style="color: var(--accent);">MOUGINS_06</span>
             </div>
             <div class="status-item">
-                <span class="status-label">Etat_Systeme</span>
+                <span class="status-label">Status_Reseau</span>
                 <span class="status-value">
                     <div id="networkDot" class="dot online"></div>
                     <span id="networkText">ONLINE</span>
@@ -168,20 +146,35 @@
     </main>
 </div>
 
-<div id="detailsModal" onclick="this.style.display='none'">
+<div id="helpModal" class="modal" onclick="toggleHelp()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <h2 style="font-weight: 300; font-size: 2rem; margin: 0 0 30px 0;">MANUEL_UTILISATEUR</h2>
+        <div style="font-family: 'JetBrains Mono'; font-size: 0.75rem; line-height: 1.8;">
+            > RECHERCHE : Utilisez la barre supérieure pour filtrer par marque.<br>
+            > COULEURS : <br>
+            &nbsp;&nbsp;- VERT : Catalogue validé pour l'année en cours.<br>
+            &nbsp;&nbsp;- ROUGE : Archive obsolète (vérifier tarifs logiciel).<br>
+            > NAVIGATION : Utilisez le bouton "Retour" pour remonter d'un niveau.<br>
+            > AGENCE : Les données sont synchronisées pour l'agence de Mougins.
+        </div>
+        <button class="btn-open" style="width: 100%; background: var(--primary); color: white;" onclick="toggleHelp()">FERMER_MANUEL</button>
+    </div>
+</div>
+
+<div id="detailsModal" class="modal" onclick="this.style.display='none'">
     <div class="modal-box" onclick="event.stopPropagation()">
         <h2 id="modalTitle" style="font-weight: 300; font-size: 2.5rem; margin: 0;"></h2>
-        <p id="modalDesc" style="font-family: 'JetBrains Mono'; font-size: 0.75rem; margin: 30px 0; opacity: 0.7;"></p>
-        <button class="btn-open" style="width: 100%; background: var(--primary); color: white;" onclick="document.getElementById('detailsModal').style.display='none'">FERMER_DOCUMENT</button>
+        <p id="modalDesc" style="font-family: 'JetBrains Mono'; font-size: 0.75rem; margin: 30px 0; opacity: 0.7; white-space: pre-wrap;"></p>
+        <button class="btn-open" style="width: 100%; background: var(--primary); color: white;" onclick="document.getElementById('detailsModal').style.display='none'">QUITTER_L_ARCHIVE</button>
     </div>
 </div>
 
 <script>
     const currentYear = 2026;
     const db = {
-        "Sanitaire": { "Grohe": { "2026": "PDF", "2025": "PDF" }, "Hansgrohe": { "2026": "PDF" }, "Geberit": { "2024": "PDF" } },
-        "Chauffage": { "Viessmann": { "2026": "PDF" }, "De Dietrich": { "2025": "PDF" }, "Saunier Duval": { "2026": "PDF" } },
-        "Plomberie": { "Nicoll": { "2025": "PDF" }, "Viega": { "2026": "PDF" } }
+        "Sanitaire": { "Grohe": { "2026": "OK", "2025": "OLD" }, "Hansgrohe": { "2026": "OK" }, "Geberit": { "2024": "OLD" } },
+        "Chauffage": { "Viessmann": { "2026": "OK" }, "De Dietrich": { "2025": "OLD" }, "Saunier Duval": { "2026": "OK" } },
+        "Plomberie": { "Nicoll": { "2025": "OLD" }, "Viega": { "2026": "OK" } }
     };
 
     const app = document.getElementById("app");
@@ -193,7 +186,7 @@
         Object.keys(db).forEach((dom, i) => {
             const card = document.createElement("div");
             card.className = "b-card";
-            card.innerHTML = `<div style="font-family: 'JetBrains Mono'; font-size: 0.6rem; opacity: 0.4; margin-bottom:15px;">SEC_ID_00${i+1}</div><h3>${dom}</h3>`;
+            card.innerHTML = `<div style="font-family: 'JetBrains Mono'; font-size: 0.6rem; opacity: 0.4; margin-bottom:15px;">REF_UNIT_00${i+1}</div><h3>${dom}</h3>`;
             card.onclick = () => renderBrands(dom);
             app.appendChild(card);
         });
@@ -201,7 +194,7 @@
 
     function renderBrands(dom) {
         viewTitle.innerText = `Root / ${dom}`;
-        app.innerHTML = "";
+        app.innerHTML = `<div class="b-card" onclick="renderDomaines()" style="background:var(--accent); color:white;"><h3>⬅ RETOUR</h3></div>`;
         Object.keys(db[dom]).forEach(brand => {
             const card = document.createElement("div");
             card.className = "b-card";
@@ -213,49 +206,50 @@
 
     function renderFiles(dom, brand) {
         viewTitle.innerText = `Root / ${dom} / ${brand}`;
-        app.innerHTML = "";
+        app.innerHTML = `<div class="b-card" onclick="renderBrands('${dom}')" style="background:var(--accent); color:white;"><h3>⬅ RETOUR</h3></div>`;
         Object.keys(db[dom][brand]).forEach(year => {
             const isOld = parseInt(year) < currentYear;
             const card = document.createElement("div");
             card.className = "b-card";
             card.innerHTML = `
-                <div style="height: 4px; background: ${isOld ? '#7a1a1a' : '#1a472a'}; margin-bottom: 20px;"></div>
-                <div style="font-family: 'JetBrains Mono'; font-size: 0.6rem; font-weight:700; color: ${isOld ? '#7a1a1a' : '#1a472a'}">${isOld ? 'DATA_OBSOLETE' : 'DATA_VALID'}</div>
-                <h3>EDITION_${year}</h3>
-                <button class="btn-open" onclick="openDoc('${brand}', '${year}')">OUVRIR_L_ARCHIVE</button>
+                <div style="height: 4px; background: ${isOld ? 'var(--offline-red)' : 'var(--online-green)'}; margin-bottom: 20px;"></div>
+                <div style="font-family: 'JetBrains Mono'; font-size: 0.6rem; font-weight:700; color: ${isOld ? 'var(--offline-red)' : 'var(--online-green)'}">${isOld ? 'DATA_EXPIRED' : 'DATA_VALIDATED'}</div>
+                <h3>ÉDITION ${year}</h3>
+                <button class="btn-open" onclick="openDoc('${brand}', '${year}')">OUVRIR_PDF</button>
             `;
             app.appendChild(card);
         });
     }
 
     function openDoc(brand, year) {
-        document.getElementById("detailsModal").style.display = "flex";
-        document.getElementById("modalTitle").innerText = `${brand} // ${year}`;
-        document.getElementById("modalDesc").innerText = `SYSTEM_LOG: Chargement de l'archive technique...\nSOURCE: /richardson/mougins/vault/${brand.toLowerCase()}.pdf\nINTEGRITY: 100%\nSTATUS: Accès autorisé.`;
+        const modal = document.getElementById("detailsModal");
+        modal.style.display = "flex";
+        document.getElementById("modalTitle").innerText = `${brand} ${year}`;
+        document.getElementById("modalDesc").innerText = `FILE_STREAM: /richardson/archives/${brand.toLowerCase()}_${year}.pdf\nSEC_LEVEL: CONFIDENTIAL\nAGENCY_AUTH: MOUGINS_APPROVED`;
     }
 
-    // --- TEMPS REEL & CONNECTIVITE ---
+    function toggleTheme() {
+        const body = document.body;
+        body.setAttribute('data-theme', body.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    }
+
+    function toggleHelp() {
+        const modal = document.getElementById("helpModal");
+        modal.style.display = modal.style.display === "flex" ? "none" : "flex";
+    }
+
     function updateStatusBar() {
         const now = new Date();
         document.getElementById("liveTime").innerText = now.toTimeString().split(' ')[0];
         document.getElementById("liveDate").innerText = now.toLocaleDateString('fr-FR');
-        
-        const dot = document.getElementById("networkDot");
-        const txt = document.getElementById("networkText");
-        if(navigator.onLine) {
-            dot.className = "dot online";
-            txt.innerText = "ONLINE";
-        } else {
-            dot.className = "dot offline";
-            txt.innerText = "OFFLINE";
-        }
+        document.getElementById("networkDot").className = navigator.onLine ? "dot online" : "dot offline";
+        document.getElementById("networkText").innerText = navigator.onLine ? "ONLINE" : "OFFLINE";
     }
 
     setInterval(updateStatusBar, 1000);
     updateStatusBar();
     renderDomaines();
 
-    // Recherche simplifiée
     document.getElementById("globalSearch").oninput = (e) => {
         const val = e.target.value.toLowerCase();
         if(val.length < 2) return;
